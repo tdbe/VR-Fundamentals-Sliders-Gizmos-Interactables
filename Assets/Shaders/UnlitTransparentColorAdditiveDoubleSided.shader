@@ -1,4 +1,4 @@
-﻿Shader "Unlit/UnlitTransparentColorDoubleSidedZWriteOn"
+﻿Shader "Unlit/UnlitTransparentColorAdditiveDoubleSided"
 {
     Properties
     {
@@ -8,8 +8,9 @@
     SubShader
     {
         Tags { "RenderType"="Transparent" "Queue"="Transparent"}
-        Blend SrcAlpha OneMinusSrcAlpha
-        ZWrite On
+        //Blend One One
+        Blend OneMinusDstColor One
+        ZWrite Off
         ZTest LEqual
         Cull Off
         LOD 100

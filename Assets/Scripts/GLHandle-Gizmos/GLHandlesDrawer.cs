@@ -1,4 +1,27 @@
-﻿using System.Collections;
+﻿/******************************************************************************
+* The MIT License (MIT)
+*
+* Copyright (c) 2019 Tudor Berechet (github @tdbe)
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in
+* all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+* THE SOFTWARE.
+******************************************************************************/
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -230,12 +253,15 @@ public class GLHandlesDrawer : MonoBehaviour
             return;
 
         //float degRad = Mathf.PI / 180;
+        float max = (2*Mathf.PI);
+        float div = max/resolution;
+        float init = max-(div-Mathf.Floor(div))*resolution; 
+
         Vector3 ciPrev_cached = 
-                    (Mathf.Cos(-resolution*0.5835f) * radius * right 
-                     + Mathf.Sin(-resolution*0.5835f) * radius * up
+                    (Mathf.Cos(init) * radius * right 
+                     + Mathf.Sin(init) * radius * up
                      ) + position;
         Vector3 ci = Vector3.zero;
-        float max = (2*Mathf.PI);
         //GL.Begin(GL.LINES);
         for(float theta = 0.0f; theta <= max; theta += resolution)
         {
@@ -283,14 +309,21 @@ public class GLHandlesDrawer : MonoBehaviour
         //mat.SetPass(0);
         //GL.Color(color);
         //float degRad = Mathf.PI / 180;
+        float max = (2*Mathf.PI);
+        float div = max/resolution;
+        float init = max-(div-Mathf.Floor(div))*resolution; 
+
         Vector3 ciPrev_cached = 
+                    (Mathf.Cos(init) * radius * right 
+                     + Mathf.Sin(init) * radius * up
+                    ) + position;
+                    /* 
                     (Mathf.Cos(-resolution*0.5835f) * radius * right 
                      + Mathf.Sin(-resolution*0.5835f) * radius * up
-                     ) + position;
+                    ) + position;*/
         Vector3 ci = Vector3.zero;
-        float max = (2*Mathf.PI);
         //GL.Begin(GL.TRIANGLES);
-        for(float theta = 0.0f; theta >= -max; theta -= resolution)
+        for(float theta = 0.0f; theta <= max; theta += resolution)
         {
             
            
@@ -304,6 +337,7 @@ public class GLHandlesDrawer : MonoBehaviour
             GL.Vertex3(position.x, position.y, position.z);
 
             ciPrev_cached = ci;
+            init = theta;
         }
         //GL.End();
         //GL.PopMatrix();
@@ -438,5 +472,23 @@ public class GLHandlesDrawer : MonoBehaviour
         DrawGizmosStack();
     }
     #endif
+
+    Matrix4x4 LookAt(Vector3 eye, Vector3 at, Vector3 up)
+	{
+	Vector3 zaxis = (eye - at).normalized;    
+	Vector3 xaxis = (Vector3.Cross(zaxis, up)).normalized;
+	Vector3 yaxis = Vector3.Cross(xaxis, zaxis);
+
+	zaxis*=-1;
+
+	Matrix4x4 viewMatrix = new Matrix4x4(
+		new Vector4(xaxis.x, xaxis.y, xaxis.z, -Vector4.Dot(xaxis, eye)),
+		new Vector4(yaxis.x, yaxis.y, yaxis.z, -Vector4.Dot(yaxis, eye)),
+		new Vector4(zaxis.x, zaxis.y, zaxis.z, -Vector4.Dot(zaxis, eye)),
+		new Vector4(0, 0, 0, 1)
+	);
+
+	return viewMatrix;
+	}
 
 }

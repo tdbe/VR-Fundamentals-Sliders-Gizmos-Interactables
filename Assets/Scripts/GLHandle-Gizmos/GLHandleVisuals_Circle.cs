@@ -7,8 +7,8 @@ using UnityEditor;
 
 public class GLHandleVisuals_Circle : MonoBehaviour {
 	public Material materialOverride;
-	[Range (0.01f, 10)]
-	public float gizmoResolution_relative = 1f;
+	[Range (0.01f, 4)]
+	public float gizmoResolutionRelative = 1f;
 	[Range (0.01f, 10)]
 
 	public float gizmoSize_relative = 1f;
@@ -59,13 +59,13 @@ public class GLHandleVisuals_Circle : MonoBehaviour {
 #endif
 
 		if (cam != null && lookAtCamera) {
-
+			transform.LookAt(cam.position, cam.up);
 			m_GLHandlesDrawer.DrawCircleBatched (
 				transform.position,
-				cam.forward,
-				cam.right,
-				cam.up,
-				transform.localScale.x * m_GLHandlesDrawer.defaultGizmoSize * gizmoSize_relative * gizmoGroupThicknessRelative, m_GLHandlesDrawer.defaultGizmoResolution * gizmoResolution_relative * gizmoGroupResolutionRelative,
+				transform.forward,//cam.forward,
+				transform.right,
+				transform.up,
+				transform.localScale.x * m_GLHandlesDrawer.defaultGizmoSize * gizmoSize_relative * gizmoGroupThicknessRelative, m_GLHandlesDrawer.defaultGizmoResolution / gizmoResolutionRelative / gizmoGroupResolutionRelative,
 				matToUse
 			);
 		} else {
@@ -74,10 +74,12 @@ public class GLHandleVisuals_Circle : MonoBehaviour {
 				transform.forward,
 				transform.right,
 				transform.up,
-				transform.localScale.x * m_GLHandlesDrawer.defaultGizmoSize * gizmoSize_relative * gizmoGroupThicknessRelative, m_GLHandlesDrawer.defaultGizmoResolution * gizmoResolution_relative * gizmoGroupResolutionRelative,
+				transform.localScale.x * m_GLHandlesDrawer.defaultGizmoSize * gizmoSize_relative * gizmoGroupThicknessRelative, m_GLHandlesDrawer.defaultGizmoResolution / gizmoResolutionRelative / gizmoGroupResolutionRelative,
 				matToUse
 			);
 		}
 
 	}
+
+	
 }

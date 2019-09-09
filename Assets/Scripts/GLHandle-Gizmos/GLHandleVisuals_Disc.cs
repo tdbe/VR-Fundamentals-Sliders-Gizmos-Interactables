@@ -7,9 +7,9 @@ using UnityEditor;
 
 public class GLHandleVisuals_Disc : MonoBehaviour {
 	public Material materialOverride;
-	[Range (0.01f, 10)]
+	[Range (0.01f, 4)]
 
-	public float gizmoResolution_relative = 1f;
+	public float gizmoResolutionRelative = 1f;
 	[Range (0.01f, 10)]
 	public float gizmoSize_relative = 0.7f;
 	[SerializeField]
@@ -60,13 +60,13 @@ public class GLHandleVisuals_Disc : MonoBehaviour {
 #endif
 		
 		if (cam != null && lookAtCamera) {
-
+			transform.LookAt(cam.position, cam.up);
 			m_GLHandlesDrawer.DrawDiscBatched (
 				transform.position,
-				cam.forward,
-				cam.right,
-				cam.up,
-				transform.localScale.x * m_GLHandlesDrawer.defaultGizmoSize * gizmoSize_relative * gizmoGroupThicknessRelative, m_GLHandlesDrawer.defaultGizmoResolution * gizmoResolution_relative * gizmoGroupResolutionRelative,
+				transform.forward,
+				transform.right,
+				transform.up,
+				transform.localScale.x * m_GLHandlesDrawer.defaultGizmoSize * gizmoSize_relative * gizmoGroupThicknessRelative, m_GLHandlesDrawer.defaultGizmoResolution / gizmoResolutionRelative / gizmoGroupResolutionRelative,
 				matToUse
 			);
 		} else {
@@ -75,7 +75,7 @@ public class GLHandleVisuals_Disc : MonoBehaviour {
 				transform.forward,
 				transform.right,
 				transform.up,
-				transform.localScale.x * m_GLHandlesDrawer.defaultGizmoSize * gizmoSize_relative * gizmoGroupThicknessRelative, m_GLHandlesDrawer.defaultGizmoResolution * gizmoResolution_relative * gizmoGroupResolutionRelative,
+				transform.localScale.x * m_GLHandlesDrawer.defaultGizmoSize * gizmoSize_relative * gizmoGroupThicknessRelative, m_GLHandlesDrawer.defaultGizmoResolution / gizmoResolutionRelative / gizmoGroupResolutionRelative,
 				matToUse
 			);
 		}

@@ -16,18 +16,42 @@ public class Spinner : MonoBehaviour
         
     }
 
+    #if UNITY_EDITOR
+
+    void OnDrawGizmos () {
+
+        if(!executeInEditMode || Application.isPlaying){
+            return;
+        }
+
+        DoRotation();
+    }
+
+    #endif
+
     // Update is called once per frame
     void Update()
     {
         #if UNITY_EDITOR
-            if(!executeInEditMode){
+            if(!executeInEditMode || !Application.isPlaying){
                 return;
             }
         #endif
-        Vector3 currentRot = transform.rotation.eulerAngles;
-        currentRot.x += rotationDirection.x * speed * Time.deltaTime;
-        currentRot.y += rotationDirection.y * speed * Time.deltaTime;
-        currentRot.z += rotationDirection.z * speed * Time.deltaTime;
-        transform.rotation = Quaternion.Euler(currentRot);
+        
+        DoRotation();
+        
+    }
+
+
+    void DoRotation(){
+        float angle = speed * Time.deltaTime;
+        //Vector3 dir = rotationDirection = rotationDirection.normalized;
+        // Vector3 currentRot = transform.rotation.eulerAngles;
+        // currentRot.x += dir.x * angle;
+        // currentRot.y += dir.y * angle;
+        // currentRot.z += dir.z * angle;
+        // transform.rotation = Quaternion.Euler(currentRot);
+
+        transform.rotation *= Quaternion.AngleAxis(speed * Time.deltaTime, rotationDirection);
     }
 }

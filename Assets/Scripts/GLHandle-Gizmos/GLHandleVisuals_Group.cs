@@ -8,8 +8,8 @@ public class GLHandleVisuals_Group : MonoBehaviour {
     public Material materialOverride;
     [Range (0.01f, 10)]
     public float gizmoGroupThicknessRelative = 1;
-    [Range (0.01f, 10)]
-    public float gizmoGroupResolutionRelative = 1;
+    [Range (0.01f, 1)]
+    public float gizmoGroup_ResolutionRelative = 0.11f;
     float m_gizmoGroupThicknessRelative_orig;
     [Range (0.01f, 10)]
     public float gizmoHoverSize = 1;
@@ -173,10 +173,10 @@ public class GLHandleVisuals_Group : MonoBehaviour {
 
         for (int i = 0; i < circles.Length; i++) {
 
-            circles[i].DrawGizmo (m_GLHandlesDrawer.cam, gizmoGroupThicknessRelative, gizmoGroupResolutionRelative, materialOverride);
+            circles[i].DrawGizmo (m_GLHandlesDrawer.cam, gizmoGroupThicknessRelative, gizmoGroup_ResolutionRelative, materialOverride);
         }
         for (int i = 0; i < discs.Length; i++) {
-            discs[i].DrawGizmo (m_GLHandlesDrawer.cam, gizmoGroupThicknessRelative, gizmoGroupResolutionRelative, materialOverride);
+            discs[i].DrawGizmo (m_GLHandlesDrawer.cam, gizmoGroupThicknessRelative, gizmoGroup_ResolutionRelative, materialOverride);
         }
         for (int i = 0; i < lines.Length; i++) {
             lines[i].DrawGizmo (materialOverride);
@@ -201,10 +201,10 @@ public class GLHandleVisuals_Group : MonoBehaviour {
 #endif
 
         for (int i = 0; i < circles.Length; i++) {
-            circles[i].DrawGizmo (m_GLHandlesDrawer.cam, gizmoGroupThicknessRelative, gizmoGroupResolutionRelative, materialOverride);
+            circles[i].DrawGizmo (m_GLHandlesDrawer.cam, gizmoGroupThicknessRelative, gizmoGroup_ResolutionRelative, materialOverride);
         }
         for (int i = 0; i < discs.Length; i++) {
-            discs[i].DrawGizmo (m_GLHandlesDrawer.cam, gizmoGroupThicknessRelative, gizmoGroupResolutionRelative, materialOverride);
+            discs[i].DrawGizmo (m_GLHandlesDrawer.cam, gizmoGroupThicknessRelative, gizmoGroup_ResolutionRelative, materialOverride);
 
         }
         for (int i = 0; i < lines.Length; i++) {

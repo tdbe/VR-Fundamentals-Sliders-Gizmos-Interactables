@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class LookAt : MonoBehaviour {
 	[Header("Fields are autopopulated if left blank.")]
 	[SerializeField]
@@ -11,7 +12,7 @@ public class LookAt : MonoBehaviour {
 	Transform m_lookAtTarget;
 
 	// Use this for initialization
-	void Start () {
+	void OnEnable () {
 		if(m_lookAtTarget == null){
 			m_lookAtTarget = Camera.main.transform;
 		}
