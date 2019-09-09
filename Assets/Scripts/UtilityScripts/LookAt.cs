@@ -11,6 +11,7 @@ public class LookAt : MonoBehaviour {
 	[SerializeField]
 	Transform m_lookAtTarget;
 
+
 	// Use this for initialization
 	void OnEnable () {
 		if(m_lookAtTarget == null){
@@ -27,6 +28,7 @@ public class LookAt : MonoBehaviour {
 	void Update () {
 		for(int i = 0; i< m_objectsToRotate.Length; i++){
 			m_objectsToRotate[i].LookAt(m_lookAtTarget);
+		
 		}
 	}
 }

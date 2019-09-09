@@ -59,7 +59,7 @@ public class GLHandleVisuals_Circle : MonoBehaviour {
 #endif
 
 		if (cam != null && lookAtCamera) {
-			transform.LookAt(cam.position, cam.up);
+			transform.LookAt(cam.position, transform.up);
 			m_GLHandlesDrawer.DrawCircleBatched (
 				transform.position,
 				transform.forward,//cam.forward,

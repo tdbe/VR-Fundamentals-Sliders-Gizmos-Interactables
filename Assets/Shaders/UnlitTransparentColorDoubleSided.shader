@@ -13,6 +13,7 @@
         ZTest LEqual
         Cull Off
         LOD 100
+        Offset -1, -1
 
         Pass
         {
