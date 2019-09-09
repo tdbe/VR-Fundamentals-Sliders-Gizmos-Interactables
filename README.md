@@ -1,9 +1,9 @@
 # VR-Fundamentals-Sliders-Gizmos-Interactables
 Library with base tools that have been developed for VR with Unity (but also work w/o VR).
 Features:
-- Gizmo drawing library with batching that also works in play mode and builds, not just in the editor like those unity bastards implemented..
+- Efficient GL Gizmo drawing library with batching that also works in play mode and builds on all platforms, not just in the editor like those unity twats implemented..
 - Chainable sliders that can be interacted with in a number of advanced ways (with SteamVR types of interaction).
-- for testing purposes I ported all the SteamVR code to work without Steam (ie all steam interaction tools work on mobile or oculus Go etc). TODO: make a sub-repository of this so it can be easily updated to future versions of SteamVR.
+- For testing purposes I ported all the SteamVR code to work without Steam (ie all steam interaction tools/scripts work on mobile or oculus Quest etc). TODO: make a sub-repository of this so it can be easily updated to future versions of SteamVR.
 
 
 Gizmos
