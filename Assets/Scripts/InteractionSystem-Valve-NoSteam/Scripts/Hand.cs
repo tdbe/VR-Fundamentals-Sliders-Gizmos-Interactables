@@ -626,9 +626,9 @@ namespace Valve.VR.InteractionSystem
 
                     if (attachedObjects[index].interactable.handAnimationOnPickup != 0)
                         StopAnimation();
-                    /*
-                    if (attachedObjects[index].interactable.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
-                        ResetTemporarySkeletonRangeOfMotion();*/
+                    
+                    // if (attachedObjects[index].interactable.setRangeOfMotionOnPickup != SkeletalMotionRangeChange.None)
+                    //     ResetTemporarySkeletonRangeOfMotion();
                 }
 
                 Transform parentTransform = null;
@@ -664,13 +664,13 @@ namespace Valve.VR.InteractionSystem
                             attachedObjects[index].attachedRigidbody.useGravity = attachedObjects[index].attachedRigidbodyUsedGravity;
                     }
                 }
-                /*
-                if (attachedObjects[index].interactable != null && attachedObjects[index].interactable.handFollowTransform && HasSkeleton())
-                {
-                    skeleton.transform.localPosition = Vector3.zero;
-                    skeleton.transform.localRotation = Quaternion.identity;
+                
+                // if (attachedObjects[index].interactable != null && attachedObjects[index].interactable.handFollowTransform && HasSkeleton())
+                // {
+                //     skeleton.transform.localPosition = Vector3.zero;
+                //     skeleton.transform.localRotation = Quaternion.identity;
                     
-                }*/
+                // }
 
                 if (attachedObjects[index].attachedObject != null)
                 {
@@ -704,6 +704,7 @@ namespace Valve.VR.InteractionSystem
                 mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
             if (hoverhighlightRenderModel != null)
                 hoverhighlightRenderModel.MatchHandToTransform(hoverhighlightRenderModel.transform);
+        
         }
 
 
@@ -904,6 +905,7 @@ namespace Valve.VR.InteractionSystem
             bool foundCloser = false;
 
             // null out old vals
+            if(overlappingColliders!=null)
             for (int i = 0; i < overlappingColliders.Length; ++i)
             {
                 overlappingColliders[i] = null;
@@ -918,6 +920,7 @@ namespace Valve.VR.InteractionSystem
             int iActualColliderCount = 0;
 
             // Pick the closest hovering
+            if(overlappingColliders!=null)
             for (int colliderIndex = 0; colliderIndex < overlappingColliders.Length; colliderIndex++)
             {
                 Collider collider = overlappingColliders[colliderIndex];
@@ -1112,9 +1115,10 @@ namespace Valve.VR.InteractionSystem
             if (attachedObject != null)
             {
                 attachedObject.SendMessage("HandAttachedUpdate", this, SendMessageOptions.DontRequireReceiver);
-            } else if(!hoveringInteractable && attachedObjects.Count == 0 && hoverLocked){
-                ForceHoverUnlock();
-            }
+            } 
+            // else if(!hoveringInteractable && attachedObjects.Count == 0 && hoverLocked){
+            //     ForceHoverUnlock();
+            // }
 
 
             if (hoveringInteractable)
@@ -1507,12 +1511,12 @@ namespace Valve.VR.InteractionSystem
                     if (Input.GetMouseButtonUp(0))
                         return explicitType;
                 }
-                /*
-                if (explicitType == GrabTypes.Pinch && grabPinchAction.GetStateUp(handType))
-                    return GrabTypes.Pinch;
-                if (explicitType == GrabTypes.Grip && grabGripAction.GetStateUp(handType))
-                    return GrabTypes.Grip;
-                    */
+                
+                // if (explicitType == GrabTypes.Pinch && grabPinchAction.GetStateUp(handType))
+                //     return GrabTypes.Pinch;
+                // if (explicitType == GrabTypes.Grip && grabGripAction.GetStateUp(handType))
+                //     return GrabTypes.Grip;
+                    
                 if (explicitType == GrabTypes.Pinch && OculusInputManager.Instance.GetGrabPinchUp(OculusInputManager.Instance.GetOculusHand(handType)))
                     return GrabTypes.Pinch;
                 if (explicitType == GrabTypes.Grip && OculusInputManager.Instance.GetGrabGripUp(OculusInputManager.Instance.GetOculusHand(handType)))
@@ -1526,36 +1530,36 @@ namespace Valve.VR.InteractionSystem
                     if (Input.GetMouseButtonUp(0))
                         return GrabTypes.Grip;
                 }
-                /*
-                if (grabPinchAction.GetStateUp(handType))
-                    return GrabTypes.Pinch;
-                if (grabGripAction.GetStateUp(handType))
-                    return GrabTypes.Grip;
-                    */
+                
+                // if (grabPinchAction.GetStateUp(handType))
+                //     return GrabTypes.Pinch;
+                // if (grabGripAction.GetStateUp(handType))
+                //     return GrabTypes.Grip;
+                    
                 if (OculusInputManager.Instance.GetGrabPinchUp(OculusInputManager.Instance.GetOculusHand(handType)))
                     return GrabTypes.Pinch;
                 if (OculusInputManager.Instance.GetGrabGripUp(OculusInputManager.Instance.GetOculusHand(handType)))
                     return GrabTypes.Grip;
                 
             }
-
+            
             return GrabTypes.None;
         }
 
-        public bool IsGrabEnding(GameObject attachedObject)
+        public bool IsGrabEnding(GameObject attachedObject, bool requestDontEndOnInputUp = false)
         {
             for (int attachedObjectIndex = 0; attachedObjectIndex < attachedObjects.Count; attachedObjectIndex++)
             {
                 if (attachedObjects[attachedObjectIndex].attachedObject == attachedObject)
                 {
-                    return IsGrabbingWithType(attachedObjects[attachedObjectIndex].grabbedWithType) == false;
+                    return IsGrabbingWithType(attachedObjects[attachedObjectIndex].grabbedWithType, requestDontEndOnInputUp) == false;
                 }
             }
 
             return false;
         }
 
-        public bool IsGrabbingWithType(GrabTypes type)
+        public bool IsGrabbingWithType(GrabTypes type, bool requestDontEndOnInputUp = false)
         {
             if (noSteamVRFallbackCamera)
             {
@@ -1571,11 +1575,24 @@ namespace Valve.VR.InteractionSystem
                 case GrabTypes.Grip:
                     return grabGripAction.GetState(handType);
                     */
+                case GrabTypes.Scripted:
+                    return true;
+                case GrabTypes.Trigger:
+                    return true;
+
                 case GrabTypes.Pinch:
-                    return OculusInputManager.Instance.GetGrabPinch(OculusInputManager.Instance.GetOculusHand(handType));
+                    if(requestDontEndOnInputUp)
+                        //return OculusInputManager.Instance.GetGrabPinchDown(OculusInputManager.Instance.GetOculusHand(handType));
+                        return true;
+                    else
+                        return OculusInputManager.Instance.GetGrabPinch(OculusInputManager.Instance.GetOculusHand(handType));
 
                 case GrabTypes.Grip:
-                    return OculusInputManager.Instance.GetGrabGrip(OculusInputManager.Instance.GetOculusHand(handType));
+                    if(requestDontEndOnInputUp)
+                        //return OculusInputManager.Instance.GetGrabGripDown(OculusInputManager.Instance.GetOculusHand(handType));
+                        return true;
+                    else
+                        return OculusInputManager.Instance.GetGrabGrip(OculusInputManager.Instance.GetOculusHand(handType));
                     
                 default:
                     return false;

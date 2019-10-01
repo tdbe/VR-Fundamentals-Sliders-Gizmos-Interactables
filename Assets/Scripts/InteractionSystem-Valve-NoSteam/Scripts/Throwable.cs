@@ -18,6 +18,14 @@ namespace Valve.VR.InteractionSystem
 	{
         public bool hoverLockIfGrabbed = true;
         public bool autoGrabObject = false;
+        public bool dontLetGoOnInputUp = false;
+        int inputUpIgnored;
+        GrabTypes grabTypeIfKnown = GrabTypes.None;
+        public void SetGrabType(GrabTypes type){
+            grabTypeIfKnown = type;
+        }
+        
+
         //public bool autoLetGoIfAutoGrabbed = true;
         Hand lastUsedHand;
         [EnumFlags]
@@ -195,7 +203,13 @@ namespace Valve.VR.InteractionSystem
 			attachTime = Time.time;
 			attachPosition = transform.position;
 			attachRotation = transform.rotation;
-            hand.m_IndexFingerCollider.enabled = false;
+            if(hand.m_IndexFingerCollider!=null)
+                hand.m_IndexFingerCollider.enabled = false;
+
+            if(dontLetGoOnInputUp)
+            {
+                inputUpIgnored = 0;
+            }
 		}
 
 
@@ -221,7 +235,15 @@ namespace Valve.VR.InteractionSystem
 
             rigidbody.velocity = velocity;
             rigidbody.angularVelocity = angularVelocity;
-            hand.m_IndexFingerCollider.enabled = true;
+            if(hand.m_IndexFingerCollider!=null)
+                hand.m_IndexFingerCollider.enabled = true;
+            
+            if(dontLetGoOnInputUp)
+            {
+                inputUpIgnored = 0;
+            }
+
+            grabTypeIfKnown = GrabTypes.None;
         }
 
 
@@ -255,13 +277,30 @@ namespace Valve.VR.InteractionSystem
                 velocity *= scaleReleaseVelocity;
         }
 
+        bool GetGrabPinchInputClicked(Hand hand){
+            bool inputForGrab = OculusInputManager.Instance.GetGrabPinchClick(OculusInputManager.Instance.GetOculusHand(hand.handType))
+            ||
+            OculusInputManager.Instance.GetGrabGripClick(OculusInputManager.Instance.GetOculusHand(hand.handType));
+            return inputForGrab;
+        }
+
         //-------------------------------------------------
         protected virtual void HandAttachedUpdate(Hand hand)
         {
+            //int index = hand.attachedObjects.FindIndex(l => l.attachedObject == objectToDetach);
+            //if (index != -1)
+            bool inputForGrab = GetGrabPinchInputClicked(hand);
 
-
-            if (hand.IsGrabEnding(this.gameObject))
+            if(dontLetGoOnInputUp && inputForGrab && 
+                ((grabTypeIfKnown == GrabTypes.Scripted || grabTypeIfKnown == GrabTypes.Trigger) || inputUpIgnored > 0))
+            {               
+                hand.DetachObject(gameObject, restoreOriginalParent);
+            }
+            else
+            if ( hand.IsGrabEnding(this.gameObject, dontLetGoOnInputUp))
             {
+                
+
                 hand.DetachObject(gameObject, restoreOriginalParent);
 
                 // Uncomment to detach ourselves late in the frame.
@@ -272,6 +311,9 @@ namespace Valve.VR.InteractionSystem
                 // to teleport behind the hand when the player releases it.
                 //StartCoroutine( LateDetach( hand ) );
             }
+
+            if(dontLetGoOnInputUp && inputForGrab)
+                inputUpIgnored++;
 
             if (onHeldUpdate != null)
                 onHeldUpdate.Invoke(hand);
