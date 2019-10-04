@@ -52,10 +52,14 @@ public class AutoGrabInteractable : MonoBehaviour
 
     public bool _turnGameObjectOnWhenForceGrabbed = false;
 
+    //public bool m_autoGrabOnStart = false;
 
-    void Awake()
+    void Start()
     {
-        
+        // if(m_autoGrabOnStart){
+        //     m_interactable.hoveringHand = lastOwnerHand;
+        //     ForceGrabObject(m_interactable);    
+        // }
     }
 
     void GetReferences(){
@@ -126,6 +130,8 @@ public class AutoGrabInteractable : MonoBehaviour
     {
         if (interactable.hoveringHand != null)
             lastOwnerHand = interactable.hoveringHand;
+        
+            
         if (lastOwnerHand && !lastOwnerHand.ObjectIsAttached(this.gameObject))
         {
             //Debug.Log("Hover-trigger-grabbed " + gameObject.name);

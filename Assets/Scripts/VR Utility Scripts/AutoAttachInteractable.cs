@@ -10,12 +10,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
+using UnityEngine.Events;
 
 	//-------------------------------------------------------------------------
 	public class AutoAttachInteractable : MonoBehaviour
 	{
 		[SerializeField]
 		private Hand hand;
+        //[SerializeField]
+        //bool m_forceKeepAttached;
+
+        public UnityEvent OnAutoAttachCalled;
        
         Hand.AttachmentFlags att;
         Throwable thr;
@@ -33,6 +38,8 @@ using Valve.VR.InteractionSystem;
 
         public void AutoAttachToHand(Hand hand){
             this.hand = hand;
+            if(OnAutoAttachCalled!=null)
+                OnAutoAttachCalled.Invoke();
             this.enabled = (true);
         }
 
@@ -60,7 +67,8 @@ using Valve.VR.InteractionSystem;
                     //objectToAttach.transform.localScale = item.transform.localScale;
 
                     //Destroy(this);
-                    this.enabled = (false);
+                    //if(!m_forceKeepAttached)
+                        this.enabled = (false);
                 }
 			
 		}

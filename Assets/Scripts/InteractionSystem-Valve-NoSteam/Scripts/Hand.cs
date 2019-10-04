@@ -605,6 +605,7 @@ namespace Valve.VR.InteractionSystem
         public void DetachObject(GameObject objectToDetach, bool restoreOriginalParent = true)
         {
             int index = attachedObjects.FindIndex(l => l.attachedObject == objectToDetach);
+            //Debug.Log("FOUND OBJECT OR NOT: "+objectToDetach.name+"; found: "+index);
             if (index != -1)
             {
                 if (spewDebugText)
@@ -1111,6 +1112,7 @@ namespace Valve.VR.InteractionSystem
         {
             UpdateNoSteamVRFallback();
 
+            /*
             GameObject attachedObject = currentAttachedObject;
             if (attachedObject != null)
             {
@@ -1119,6 +1121,14 @@ namespace Valve.VR.InteractionSystem
             // else if(!hoveringInteractable && attachedObjects.Count == 0 && hoverLocked){
             //     ForceHoverUnlock();
             // }
+            */
+            AttachedObject[] attObjs = attachedObjects.ToArray();
+            foreach(AttachedObject attachedObject in attObjs){
+                if (attachedObject.attachedObject != null)
+                {
+                    attachedObject.attachedObject.SendMessage("HandAttachedUpdate", this, SendMessageOptions.DontRequireReceiver);
+                } 
+            }
 
 
             if (hoveringInteractable)

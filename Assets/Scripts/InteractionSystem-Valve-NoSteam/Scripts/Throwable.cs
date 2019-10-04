@@ -18,7 +18,17 @@ namespace Valve.VR.InteractionSystem
 	{
         public bool hoverLockIfGrabbed = true;
         public bool autoGrabObject = false;
+        [Header("Only let go on click (toggle style behaviour), instead of let go on input up.")]
         public bool dontLetGoOnInputUp = false;
+        public void DontLetGoOnInputUp(bool val){
+            dontLetGoOnInputUp = val;
+        }
+        [Header("While this is true, this object will not let itself go from the hand. However the hand can still be commanded to let go of all objects it's holding.")]
+        public bool neverLetGo = false; 
+        public void NeverLetGo(bool val){
+            neverLetGo = val;
+        }
+        
         int inputUpIgnored;
         GrabTypes grabTypeIfKnown = GrabTypes.None;
         public void SetGrabType(GrabTypes type){
@@ -28,6 +38,7 @@ namespace Valve.VR.InteractionSystem
 
         //public bool autoLetGoIfAutoGrabbed = true;
         Hand lastUsedHand;
+        [Space(15)]
         [EnumFlags]
 		[Tooltip( "The flags used to attach this object to the hand." )]
 		public Hand.AttachmentFlags attachmentFlags = Hand.AttachmentFlags.ParentToHand | Hand.AttachmentFlags.DetachFromOtherHand | Hand.AttachmentFlags.TurnOnKinematic;
@@ -291,15 +302,20 @@ namespace Valve.VR.InteractionSystem
             //if (index != -1)
             bool inputForGrab = GetGrabPinchInputClicked(hand);
 
+            if(neverLetGo){
+
+            }
+            else
             if(dontLetGoOnInputUp && inputForGrab && 
                 ((grabTypeIfKnown == GrabTypes.Scripted || grabTypeIfKnown == GrabTypes.Trigger) || inputUpIgnored > 0))
             {               
                 hand.DetachObject(gameObject, restoreOriginalParent);
+                //Debug.Log("Detatching: "+gameObject.name);
             }
             else
             if ( hand.IsGrabEnding(this.gameObject, dontLetGoOnInputUp))
             {
-                
+                //Debug.Log("Detatching2: "+gameObject.name);
 
                 hand.DetachObject(gameObject, restoreOriginalParent);
 
