@@ -34,6 +34,7 @@ namespace Valve.VR.InteractionSystem
         public void SetGrabType(GrabTypes type){
             grabTypeIfKnown = type;
         }
+
         
 
         //public bool autoLetGoIfAutoGrabbed = true;
@@ -288,19 +289,14 @@ namespace Valve.VR.InteractionSystem
                 velocity *= scaleReleaseVelocity;
         }
 
-        bool GetGrabPinchInputClicked(Hand hand){
-            bool inputForGrab = OculusInputManager.Instance.GetGrabPinchClick(OculusInputManager.Instance.GetOculusHand(hand.handType))
-            ||
-            OculusInputManager.Instance.GetGrabGripClick(OculusInputManager.Instance.GetOculusHand(hand.handType));
-            return inputForGrab;
-        }
+        
 
         //-------------------------------------------------
         protected virtual void HandAttachedUpdate(Hand hand)
         {
             //int index = hand.attachedObjects.FindIndex(l => l.attachedObject == objectToDetach);
             //if (index != -1)
-            bool inputForGrab = GetGrabPinchInputClicked(hand);
+            bool inputForGrab = OculusInputManager.Instance.GetGrabAnyClicked(OculusInputManager.Instance.GetOculusHand(hand.handType));
 
             if(neverLetGo){
 

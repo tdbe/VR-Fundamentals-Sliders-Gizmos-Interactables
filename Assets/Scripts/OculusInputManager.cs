@@ -1,9 +1,33 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
 {
+
+    public enum AllowedGrabTypes
+    {
+        Pinch = 1 << 0,
+        Grip = 1 << 1
+    };
+    [EnumFlags]
+    public AllowedGrabTypes allowedGrabInputMask = AllowedGrabTypes.Pinch;
+
+
+
+    [SerializeField]
+    bool m_CalculateClickEvents;
+    [SerializeField]
+    float m_durationToRegisterClick = 0.6f;
+    Dictionary<OVRInput.Controller,float> m_grabGripDownTime;
+    Dictionary<OVRInput.Controller,bool>  m_grabGripClick;
+    Dictionary<OVRInput.Controller,float> m_grabPinchDownTime;
+    Dictionary<OVRInput.Controller,bool>  m_grabPinchClick;
+
     [SerializeField]
     bool m_DebugLogs = false;
     [SerializeField]
@@ -21,6 +45,16 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
     [SerializeField]
     float m_floatToBoolThreshold = 0.02f;
 
+    void Awake(){
+        if(m_CalculateClickEvents){
+            m_grabGripDownTime = new Dictionary<OVRInput.Controller, float>();
+            //m_grabGripDownTime.Add(GetOculusHand(Valve.VR.SteamVR_Input_Sources.LeftHand))
+            m_grabGripClick = new Dictionary<OVRInput.Controller, bool>();
+            m_grabPinchDownTime = new Dictionary<OVRInput.Controller, float>();
+            m_grabPinchClick = new Dictionary<OVRInput.Controller, bool>();
+        }
+    }
+
     public OVRInput.Controller GetOculusHand(Valve.VR.SteamVR_Input_Sources handType)
     {
         if (handType == Valve.VR.SteamVR_Input_Sources.LeftHand)
@@ -32,6 +66,13 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
             return OVRInput.Controller.RTouch;
         }
         else return OVRInput.Controller.None;
+    }
+
+    public bool GetGrabAnyClicked(OVRInput.Controller hand){
+        bool inputForGrab = ((allowedGrabInputMask & AllowedGrabTypes.Pinch) > 0) && OculusInputManager.Instance.GetGrabPinchClick(hand)
+        ||
+        ((allowedGrabInputMask & AllowedGrabTypes.Grip) > 0) && OculusInputManager.Instance.GetGrabGripClick(hand);
+        return inputForGrab;
     }
 
     public bool GetGrabPinch(OVRInput.Controller hand)
@@ -70,12 +111,41 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
         if (val)//val > m_floatToBoolThreshold)
         {
 #if UNITY_EDITOR
-            if (m_DebugLogs) Debug.Log("GetGrabPinch " + hand.ToString() + " " + val);
+            if (m_DebugLogs) Debug.Log("GetGrabPinchUp " + hand.ToString() + " " + val);
 #endif
+            if(m_CalculateClickEvents){
+                if(!m_grabPinchDownTime.ContainsKey(hand)){
+                    m_grabPinchDownTime.Add(hand, 0);
+                }
+                if(Time.time - m_grabPinchDownTime[hand] <= m_durationToRegisterClick){
+                    m_grabPinchDownTime[hand] = 0.0f;
+                    if(!m_grabPinchClick.ContainsKey(hand)){
+                        m_grabPinchClick.Add(hand, false);
+                    }
+                    m_grabPinchClick[hand] = true;
+                    //Debug.Log("TRUE Time.time {"+Time.time+"} - m_grabPinchDownTime[hand{"+hand+"}] {"+m_grabPinchDownTime[hand]+"} {"+(Time.time - m_grabPinchDownTime[hand])+"} <= m_durationToRegisterClick {"+m_durationToRegisterClick+"}");
+                }
+            }
             return true;
         }
         else
             return false;
+    }
+
+    public bool GetGrabPinchClick(OVRInput.Controller hand){
+        if(m_CalculateClickEvents ){
+            if(!m_grabPinchClick.ContainsKey(hand))
+                m_grabPinchClick.Add(hand, false);
+            #if UNITY_EDITOR
+                if (m_DebugLogs && m_grabPinchClick[hand]) Debug.Log("GetGrabPinchCLICK " + hand.ToString() + " " + m_grabPinchClick[hand]);
+            #endif
+            return m_grabPinchClick[hand];
+        }
+        else
+        {
+            return false;
+        }
+        
     }
 
     public bool GetGrabGripUp(OVRInput.Controller hand)
@@ -84,12 +154,40 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
         if (val)//val > m_floatToBoolThreshold)
         {
 #if UNITY_EDITOR
-            if (m_DebugLogs) Debug.Log("GetGrabGrip " + hand.ToString() + " " + val);
+            if (m_DebugLogs) Debug.Log("GetGrabGripUp " + hand.ToString() + " " + val);
 #endif
+            if(m_CalculateClickEvents){
+                if(!m_grabGripDownTime.ContainsKey(hand)){
+                    m_grabGripDownTime.Add(hand, 0);
+                }
+                if(Time.time - m_grabGripDownTime[hand] <= m_durationToRegisterClick){
+                    m_grabGripDownTime[hand] = 0.0f;
+                    if(!m_grabGripClick.ContainsKey(hand)){
+                        m_grabGripClick.Add(hand, false);
+                    }
+                    m_grabGripClick[hand] = true;
+                }
+            }
             return true;
         }
         else
             return false;
+    }
+
+    public bool GetGrabGripClick(OVRInput.Controller hand){
+        if(m_CalculateClickEvents){
+            if(!m_grabGripClick.ContainsKey(hand))
+                m_grabGripClick.Add(hand, false);
+            #if UNITY_EDITOR
+                if (m_DebugLogs && m_grabGripClick[hand]) Debug.Log("GetGrabGripCLICK " + hand.ToString() + " " + m_grabGripClick[hand]);
+            #endif
+            
+            return m_grabGripClick[hand];
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public bool GetGrabPinchDown(OVRInput.Controller hand)
@@ -99,8 +197,14 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
         if (val)//val > m_floatToBoolThreshold)
         {
 #if UNITY_EDITOR
-            if (m_DebugLogs) Debug.Log("GetGrabPinch " + hand.ToString() + " " + val);
+            if (m_DebugLogs) Debug.Log("GetGrabPinchDown " + hand.ToString() + " " + val);
 #endif
+            if(m_CalculateClickEvents){
+                if(!m_grabPinchDownTime.ContainsKey(hand)){
+                    m_grabPinchDownTime.Add(hand, 0);
+                }
+                m_grabPinchDownTime[hand] = Time.time;
+            }
             return true;
         }
         else
@@ -113,8 +217,14 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
         if (val)//val > m_floatToBoolThreshold)
         {
 #if UNITY_EDITOR
-            if (m_DebugLogs) Debug.Log("GetGrabGrip " + hand.ToString() + " " + val);
+            if (m_DebugLogs) Debug.Log("GetGrabGripDown " + hand.ToString() + " " + val);
 #endif
+            if(m_CalculateClickEvents){
+                if(!m_grabGripDownTime.ContainsKey(hand)){
+                    m_grabGripDownTime.Add(hand, 0);
+                }
+                m_grabGripDownTime[hand] = Time.time;
+            }
             return true;
         }
         else
@@ -294,6 +404,33 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
         m_right_TeleportActionUp = GetControllerTeleportActionUp(RightController);
         m_left_TeleportAction = GetControllerTeleportAction(LeftController);
         m_right_TeleportAction = GetControllerTeleportAction(RightController);
+
+        if(m_CalculateClickEvents){
+            foreach(OVRInput.Controller con in m_grabPinchClick.Keys.ToList()){
+                m_grabPinchClick[con] = false;
+                GetGrabPinchDown(con);
+                GetGrabPinchUp(con);
+                //GetGrabPinchClick(con);
+            }
+            foreach(OVRInput.Controller con in m_grabGripClick.Keys.ToList()){
+                m_grabGripClick[con] = false;
+                GetGrabGripDown(con);
+                GetGrabGripUp(con);
+                //GetGrabGripClick(con);
+            }
+        }
+    }
+
+    void LateUpdate(){
+        /*
+        if(m_CalculateClickEvents){
+            foreach(OVRInput.Controller con in m_grabPinchClick.Keys.ToList()){
+                m_grabPinchClick[con] = false;
+            }
+            foreach(OVRInput.Controller con in m_grabGripClick.Keys.ToList()){
+                m_grabGripClick[con] = false;
+            }
+        }*/
     }
 
     public float GetPrimaryIndexTrigger(OVRInput.Controller controller)
@@ -312,6 +449,34 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
     public Vector2 GetControllerThumbStick(OVRInput.Controller controller)
     {
         Vector2 value = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, controller);
+        return value;
+    }
+
+/// <summary>
+/// returns true if the primary thumbstick has been moved downwards more than halfway.
+/// </summary>
+/// <param name="controller"></param>
+/// <returns></returns>
+    public bool GetControllerThumbStickMovedDown(OVRInput.Controller controller)
+    {
+        bool value = OVRInput.Get(OVRInput.Button.PrimaryThumbstickDown, controller);
+        return value;
+    }
+
+/// <summary>
+/// returns true if the primary thumbstick has been moved upwards more than halfway.
+/// </summary>
+/// <param name="controller"></param>
+/// <returns></returns>
+    public bool GetControllerThumbStickMovedUp(OVRInput.Controller controller)
+    {
+        bool value = OVRInput.Get(OVRInput.Button.PrimaryThumbstickUp, controller);
+        return value;
+    }
+
+    public bool GetControllerThumbStickPress(OVRInput.Controller controller)
+    {
+        bool value = OVRInput.Get(OVRInput.Button.PrimaryThumbstick, controller);
         return value;
     }
 
@@ -377,3 +542,21 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
         return value;
     }
 }
+
+public class EnumFlags : PropertyAttribute
+{
+    public EnumFlags() { }
+}
+
+
+#if UNITY_EDITOR
+	//-------------------------------------------------------------------------
+[CustomPropertyDrawer( typeof( EnumFlags ) )]
+public class EnumFlagsPropertyDrawer : PropertyDrawer
+{
+    public override void OnGUI( Rect position, SerializedProperty property, GUIContent label )
+    {
+        property.intValue = EditorGUI.MaskField( position, label, property.intValue, property.enumNames );
+    }
+}
+#endif

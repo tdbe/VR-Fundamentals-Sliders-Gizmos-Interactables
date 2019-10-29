@@ -11,6 +11,8 @@ public class ClickToGrabFromAfar : MonoBehaviour
     [Space(15)]
     [SerializeField]
     bool m_grabWhenAlreadyBeingGrabbed = false;
+    [SerializeField]
+    bool m_regrabEvenWhenAlreadyGrabbedBySameHand = false;
 
     [Space(15)]
     [Header("You must assign these, or implement something in OculusInputManager.")]
@@ -34,24 +36,19 @@ public class ClickToGrabFromAfar : MonoBehaviour
             m_autoAttach = m_targetObject.GetComponent<AutoAttachInteractable>();
     }
 
-    bool GetGrabPinchInputClicked(Hand hand){
-        bool inputForGrab = OculusInputManager.Instance.GetGrabPinchClick(OculusInputManager.Instance.GetOculusHand(hand.handType))
-        ||
-        OculusInputManager.Instance.GetGrabGripClick(OculusInputManager.Instance.GetOculusHand(hand.handType));
-        return inputForGrab;
-    }
+   
 
     // Update is called once per frame
     void Update()
     {
         for(int i =0; i< trackedHands.Length; i++){
-            if(GetGrabPinchInputClicked(trackedHands[i])){
+            if(OculusInputManager.Instance.GetGrabAnyClicked(OculusInputManager.Instance.GetOculusHand(trackedHands[i].handType))){
                 bool ok = true;
                 for(int j =0; j< trackedHands.Length; j++){
                     if(trackedHands[j].ObjectIsAttached(m_targetObject)){
                         if(!m_grabWhenAlreadyBeingGrabbed)
                             ok = false;   
-                        else if(j==i)
+                        else if(j==i && !m_regrabEvenWhenAlreadyGrabbedBySameHand)
                             ok = false;
                     }
                 }
