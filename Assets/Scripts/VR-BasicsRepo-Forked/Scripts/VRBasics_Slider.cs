@@ -56,6 +56,8 @@ public class VRBasics_Slider : MonoBehaviour {
 
 	bool wasKinematic;
 
+	GameObject dummyTrans;
+
 	GameObject _child;
 	[HideInInspector]
 	public GameObject child {
@@ -72,6 +74,13 @@ public class VRBasics_Slider : MonoBehaviour {
 	}
 
 	void Awake () {
+		
+		dummyTrans = GameObject.Find ("Dummy");
+		if(dummyTrans==null){
+			dummyTrans = new GameObject();
+			dummyTrans.name = "Dummy";
+		}
+
 		FindConfigurableJoint ();
 
 		wasKinematic = GetComponent<Rigidbody> ().isKinematic;
@@ -101,7 +110,6 @@ public class VRBasics_Slider : MonoBehaviour {
 	//the percentage of the total amount of movement (0.0 - 1.0)
 	public void CalcPercentage () {
 		//an empty game object used to aid in positioning
-		GameObject dummyTrans = GetDummy ();
 		//reference to the parent rail
 		VRBasics_Rail rail = transform.parent.gameObject.GetComponent<VRBasics_Rail> ();
 
@@ -137,7 +145,7 @@ public class VRBasics_Slider : MonoBehaviour {
 		//Debug.Log(percentage);
 
 		//remove the dummy
-		DestroyImmediate (dummyTrans);
+		//DestroyImmediate (dummyTrans);
 
 		/*
 		if (Application.isPlaying) {
@@ -169,23 +177,27 @@ public class VRBasics_Slider : MonoBehaviour {
 		//Handles.DrawSolidDisc (transform.position, rail.transform.right, 0.01f);
 
 	}
-
+/*
 	public GameObject GetDummy () {
-
-		GameObject dummyTrans;
-		//if one exist
-		if (GameObject.Find ("Dummy")) {
-			//get the Dummy transform object
-			dummyTrans = GameObject.Find ("Dummy");
-			//if one doesnt exist
-		} else {
-			//create one
-			dummyTrans = new GameObject ();
-			dummyTrans.name = "Dummy";
+		
+		// GameObject dummyTrans;
+		// //if one exist
+		// if (GameObject.Find ("Dummy")) {
+		// 	//get the Dummy transform object
+		// 	dummyTrans = GameObject.Find ("Dummy");
+		// 	//if one doesnt exist
+		// } else {
+		// 	//create one
+		// 	dummyTrans = new GameObject ();
+		// 	dummyTrans.name = "Dummy";
+		// }
+		
+		if(dummyTrans==null){
+			dummyTrans = new GameObject();
 		}
 		return dummyTrans;
 	}
-
+	*/
 	public void SetConnectedAnchorPos () {
 		//reference to the parent rail
 		VRBasics_Rail rail = transform.parent.gameObject.GetComponent<VRBasics_Rail> ();
@@ -215,7 +227,7 @@ public class VRBasics_Slider : MonoBehaviour {
 
 	public void EditorSetPosition () {
 		//an empty game object used to aid in positioning
-		GameObject dummyTrans = GetDummy ();
+		//dummyTrans = GetDummy ();
 		//reference to the parent rail
 		VRBasics_Rail rail = transform.parent.gameObject.GetComponent<VRBasics_Rail> ();
 		//set the dummy at the position and rotation of the rail transform
@@ -236,7 +248,7 @@ public class VRBasics_Slider : MonoBehaviour {
 		//move the slide to the dummy position
 		transform.position = dummyTrans.transform.position;
 		//remove the dummy
-		DestroyImmediate (dummyTrans);
+		//DestroyImmediate (dummyTrans);
 	}
 
 	//p must be between 0 and 1
@@ -244,7 +256,6 @@ public class VRBasics_Slider : MonoBehaviour {
 		//clamp p
 		p = Mathf.Clamp (p, 0.0f, 1.0f);
 		//an empty game object used to aid in positioning
-		GameObject dummyTrans = GetDummy ();
 		//reference to the parent rail
 		VRBasics_Rail rail = transform.parent.gameObject.GetComponent<VRBasics_Rail> ();
 		//set the dummy at the position and rotation of the rail transform
@@ -269,7 +280,7 @@ public class VRBasics_Slider : MonoBehaviour {
 		//after moving the slider with script, best make it not kinematic
 		GetComponent<Rigidbody> ().isKinematic = wasKinematic;
 		//remove the dummy
-		DestroyImmediate (dummyTrans);
+		//DestroyImmediate (dummyTrans);
 	}
 
 	public void SetSpring () {

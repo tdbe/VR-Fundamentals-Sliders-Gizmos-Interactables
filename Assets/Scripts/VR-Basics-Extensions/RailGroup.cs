@@ -11,8 +11,14 @@ This script takes all the VRBasics Rais, groups them, and exposes a slider that 
 [ExecuteInEditMode]
 public class RailGroup : InteractableValue
 {
-  
-
+    [SerializeField]
+    [Range(0,1)]
+    float m_setSliderPos = -1;
+    float m_setSliderPosPrev = -1;
+    [SerializeField]
+    bool m_forceSet;
+    //total length of all children rails of this railgroup. updated every frame in calculateGlobalSliderPosition()
+    float m_totalRailLength;
     //[Range(0,1)]
     //public new float sliderPosition;
 
@@ -68,6 +74,7 @@ public class RailGroup : InteractableValue
     Valve.VR.InteractionSystem.SoundPlayOneshot oneshotSound;
 
     AudioClip[] waveFiles;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -142,7 +149,7 @@ public class RailGroup : InteractableValue
     void calculateGlobalSliderPosition()
     {
         //sliderPosition = (m_currentRail+children[m_currentRail].slider.position)/children.Length;
-        float totalRailLength = 0;
+        m_totalRailLength = 0;
         float lengthSoFar = 0;
         for (int i = 0; i < children.Length; i++)
         {
@@ -154,10 +161,41 @@ public class RailGroup : InteractableValue
             {
                 lengthSoFar += children[m_currentRail].length * children[m_currentRail].slider.position;
             }
-            totalRailLength += children[i].length;
+            m_totalRailLength += children[i].length;
         }
-        sliderPosition = lengthSoFar / totalRailLength;
+        sliderPosition = lengthSoFar / m_totalRailLength;
         //Debug.Log("Calculated global to be this: " + sliderPosition + " for this object: " + transform.parent.name);
+    }
+
+    public void SetGlobalSliderPosition(float newVal, bool forceSet = false){
+        
+		float sliderPos = newVal * m_totalRailLength;
+        float lengthSoFar = 0;
+        for (int i = 0; i < children.Length; i++)
+        {
+            if(lengthSoFar + children[i].length > sliderPos){
+                children[i].SetSliderPosition(sliderPos-lengthSoFar);
+                for (int j = 0; j < children.Length; j++)
+                {
+                    if(j<i){
+                        children[j].SetSliderPosition(children[j].length);
+                    }
+                    else if(j>i){
+                        children[j].SetSliderPosition(0);
+                    }
+                }
+                break;
+            }
+            else{
+                lengthSoFar += children[i].length;// * children[m_currentRail].slider.position;
+            }
+        }
+        
+        if(forceSet)
+            m_forceSet = true;
+        else
+            m_forceSet = false;
+        sliderPosition = m_setSliderPos = newVal;
     }
 
     Vector3 getWorldPositionAtGlobalSliderPosition(float sliderPosition)
@@ -199,8 +237,16 @@ public class RailGroup : InteractableValue
         m_currentRailOld = m_currentRail;
     }
 
+
     void Update(){
         calculateGlobalSliderPosition();
+
+        if(m_forceSet || m_setSliderPos != m_setSliderPosPrev){
+            m_setSliderPosPrev = m_setSliderPos;
+            SetGlobalSliderPosition(m_setSliderPos, m_forceSet);
+        }
+
+
         if(m_railGroupGlobalHandle!=null && m_IsGlobalHandleGlobal)
             m_railGroupGlobalHandle.transform.position = getWorldPositionAtGlobalSliderPosition(sliderPosition);
 
