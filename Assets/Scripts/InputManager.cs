@@ -47,8 +47,8 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
     [SerializeField]
     Transform m_playerGeometryRightArm;
 
-    [SerializeField]
-    Buttons startStopRobotsButton;
+    //[SerializeField]
+    //Buttons startStopRobotsButton;
 
 
     bool _setHeight;

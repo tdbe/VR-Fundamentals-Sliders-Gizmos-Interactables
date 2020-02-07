@@ -94,7 +94,9 @@ public class AutoGrabInteractable : MonoBehaviour
             lastOwnerHand = m_interactable.hoveringHand;
 
         #if USE_OCULUS
-        bool triggerGrab = OculusInputManager.Instance.GetGrabPinch(OculusInputManager.Instance.GetOculusHand(lastOwnerHand.handType));//
+        //bool triggerGrab = OculusInputManager.Instance.GetGrabPinch(OculusInputManager.Instance.GetOculusHand(lastOwnerHand.handType));//
+        bool triggerGrab = OculusInputManager.Instance.GetGrabAnyClicked(OculusInputManager.Instance.GetOculusHand(lastOwnerHand.handType));//
+        
         if (lastOwnerHand!=null && triggerGrab)
         #else
         if (lastOwnerHand!=null && triggerDownContinuousAction.GetState(lastOwnerHand.handType))
@@ -116,7 +118,8 @@ public class AutoGrabInteractable : MonoBehaviour
         //m_interactable.hoveringHand = lastOwnerHand;
 
         #if USE_OCULUS
-        bool triggerGrab = OculusInputManager.Instance.GetGrabPinch(OculusInputManager.Instance.GetOculusHand(lastOwnerHand.handType));//
+        //bool triggerGrab = OculusInputManager.Instance.GetGrabPinch(OculusInputManager.Instance.GetOculusHand(lastOwnerHand.handType));//
+        bool triggerGrab = OculusInputManager.Instance.GetGrabAnyClicked(OculusInputManager.Instance.GetOculusHand(lastOwnerHand.handType));//
         if (lastOwnerHand!=null && triggerGrab)
         #else
         if (lastOwnerHand!=null && triggerDownContinuousAction.GetState(lastOwnerHand.handType))

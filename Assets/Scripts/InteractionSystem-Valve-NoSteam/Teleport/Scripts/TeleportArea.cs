@@ -16,6 +16,8 @@ namespace Valve.VR.InteractionSystem
 	{
 		//Public properties
 		public Bounds meshBounds { get; private set; }
+		public bool Locked {get{return locked;} set{locked = value;}}
+
 
 		//Private data
 		private MeshRenderer areaMesh;
@@ -25,6 +27,7 @@ namespace Valve.VR.InteractionSystem
 		private Color lockedTintColor = Color.clear;
 		private bool highlighted = false;
 
+	
 		//-------------------------------------------------
 		public void Awake()
 		{

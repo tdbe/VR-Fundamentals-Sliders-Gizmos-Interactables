@@ -29,7 +29,7 @@ namespace Valve.VR.InteractionSystem
             neverLetGo = val;
         }
         
-        int inputUpIgnored;
+        int m_inputUpIgnored;
         GrabTypes grabTypeIfKnown = GrabTypes.None;
         public void SetGrabType(GrabTypes type){
             grabTypeIfKnown = type;
@@ -146,7 +146,7 @@ namespace Valve.VR.InteractionSystem
 
         public void ManuallyDetatchThisObject(){
             if(lastUsedHand!=null){
-                //Debug.Log("ManuallyDetatchThisObject: "+lastUsedHand);
+                Debug.Log("ManuallyDetatchThisObject: "+lastUsedHand);
 
                 lastUsedHand.DetachObject(gameObject);
                 lastUsedHand = null;
@@ -193,8 +193,9 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         protected virtual void OnAttachedToHand( Hand hand )
 		{
-            //Debug.Log("<b>[SteamVR Interaction]</b> Pickup: " + hand.GetGrabStarting().ToString());
+            Debug.Log("<b>[SteamVR Interaction]</b> Pickup: " + hand.GetGrabStarting().ToString());
             lastUsedHand = hand;
+
 
 
             hadInterpolation = this.rigidbody.interpolation;
@@ -220,14 +221,15 @@ namespace Valve.VR.InteractionSystem
 
             if(dontLetGoOnInputUp)
             {
-                inputUpIgnored = 0;
+                m_inputUpIgnored = 0;
             }
 		}
 
 
         //-------------------------------------------------
         protected virtual void OnDetachedFromHand(Hand hand)
-        {
+        {   
+            
             if(!attached)
                 return;
                 
@@ -252,7 +254,7 @@ namespace Valve.VR.InteractionSystem
             
             if(dontLetGoOnInputUp)
             {
-                inputUpIgnored = 0;
+                m_inputUpIgnored = 0;
             }
 
             grabTypeIfKnown = GrabTypes.None;
@@ -297,21 +299,29 @@ namespace Valve.VR.InteractionSystem
             //int index = hand.attachedObjects.FindIndex(l => l.attachedObject == objectToDetach);
             //if (index != -1)
             bool inputForGrab = OculusInputManager.Instance.GetGrabAnyClicked(OculusInputManager.Instance.GetOculusHand(hand.handType));
+            // if(inputForGrab){
+            //      Debug.Log("[Throwable][HandAttachedUpdate]["+gameObject.name+"] DetachObject "+gameObject.name+" - detached! (Remove this!) inputForGrab: "+inputForGrab);
+            //      //hand.DetachObject(gameObject, restoreOriginalParent);
+            // }
+
+            
 
             if(neverLetGo){
 
             }
             else
-            if(dontLetGoOnInputUp && inputForGrab && 
-                ((grabTypeIfKnown == GrabTypes.Scripted || grabTypeIfKnown == GrabTypes.Trigger) || inputUpIgnored > 0))
+            if(dontLetGoOnInputUp && inputForGrab  
+                && ((grabTypeIfKnown == GrabTypes.Scripted || grabTypeIfKnown == GrabTypes.Trigger) 
+                || m_inputUpIgnored > 0)
+                )
             {               
                 hand.DetachObject(gameObject, restoreOriginalParent);
-                //Debug.Log("Detatching: "+gameObject.name);
+                Debug.Log("Detatching: "+gameObject.name);
             }
             else
             if ( hand.IsGrabEnding(this.gameObject, dontLetGoOnInputUp))
             {
-                //Debug.Log("Detatching2: "+gameObject.name);
+                Debug.Log("Detatching2: "+gameObject.name);
 
                 hand.DetachObject(gameObject, restoreOriginalParent);
 
@@ -325,7 +335,7 @@ namespace Valve.VR.InteractionSystem
             }
 
             if(dontLetGoOnInputUp && inputForGrab)
-                inputUpIgnored++;
+                m_inputUpIgnored++;
 
             if (onHeldUpdate != null)
                 onHeldUpdate.Invoke(hand);

@@ -13,6 +13,9 @@ using Valve.VR.InteractionSystem;
 using UnityEngine.Events;
 
 	//-------------------------------------------------------------------------
+    /// <summary>
+    /// This needs to be really high in the script execution order
+    /// </summary>
 	public class AutoAttachInteractable : MonoBehaviour
 	{
 		[SerializeField]
@@ -72,6 +75,8 @@ using UnityEngine.Events;
                 }
 			
 		}
+
+        
         /*
         void HandHoverUpdate( Hand hand ){
             

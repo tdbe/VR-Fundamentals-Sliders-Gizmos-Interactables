@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
@@ -45,6 +46,12 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
     [SerializeField]
     float m_floatToBoolThreshold = 0.02f;
 
+    public OVRInput.Controller CurrentControllerOfReticle {get; set;}
+
+    [Header("Returns true on the frame that a click occurs (press down + press up within 'DurationToRegisterClick') for triggers or grip or both, according to AllowedGrabInputMask, for the controller that was clicked by the user only if the controller's hand matches the reticle's hand.")]
+    public UnityEvent OnReticleHandGrabAnyClicked;
+
+
     void Awake(){
         if(m_CalculateClickEvents){
             m_grabGripDownTime = new Dictionary<OVRInput.Controller, float>();
@@ -68,10 +75,20 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
         else return OVRInput.Controller.None;
     }
 
+
+    
     public bool GetGrabAnyClicked(OVRInput.Controller hand){
         bool inputForGrab = ((allowedGrabInputMask & AllowedGrabTypes.Pinch) > 0) && OculusInputManager.Instance.GetGrabPinchClick(hand)
         ||
         ((allowedGrabInputMask & AllowedGrabTypes.Grip) > 0) && OculusInputManager.Instance.GetGrabGripClick(hand);
+        
+        if(inputForGrab && OnReticleHandGrabAnyClicked!=null &&
+            CurrentControllerOfReticle == hand
+        ){
+            OnReticleHandGrabAnyClicked.Invoke();
+        }
+
+
         return inputForGrab;
     }
 
@@ -132,6 +149,8 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
             return false;
     }
 
+    float m_lastInputTrueFrame;
+    float m_lastInputFalseFrame;
     public bool GetGrabPinchClick(OVRInput.Controller hand){
         if(m_CalculateClickEvents ){
             if(!m_grabPinchClick.ContainsKey(hand))
@@ -139,7 +158,23 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
             #if UNITY_EDITOR
                 if (m_DebugLogs && m_grabPinchClick[hand]) Debug.Log("GetGrabPinchCLICK " + hand.ToString() + " " + m_grabPinchClick[hand]);
             #endif
-            return m_grabPinchClick[hand];
+
+            
+            if(m_grabPinchClick[hand]){
+                if(m_lastInputFalseFrame >= m_lastInputTrueFrame){
+                    m_lastInputTrueFrame = Time.frameCount;
+                    //Debug.Log("GetGrabAnyClicked_____input: "+m_grabPinchClick[hand]);
+                    return m_grabPinchClick[hand];
+                }
+                else{
+                    
+                    return false;
+                }
+            }
+            else{
+                m_lastInputFalseFrame = Time.frameCount;
+                return m_grabPinchClick[hand];
+            }
         }
         else
         {
@@ -181,8 +216,21 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
             #if UNITY_EDITOR
                 if (m_DebugLogs && m_grabGripClick[hand]) Debug.Log("GetGrabGripCLICK " + hand.ToString() + " " + m_grabGripClick[hand]);
             #endif
-            
-            return m_grabGripClick[hand];
+  
+
+            if(m_grabGripClick[hand]){
+                if(m_lastInputFalseFrame >= m_lastInputTrueFrame){
+                    m_lastInputTrueFrame = Time.frameCount;
+                    Debug.Log("GetGrabAnyClicked_____input");
+                    return m_grabGripClick[hand];
+                }
+                else
+                    return false;
+            }
+            else{
+                m_lastInputFalseFrame = Time.frameCount;
+                return m_grabGripClick[hand];
+            }
         }
         else
         {
@@ -419,6 +467,11 @@ public class OculusInputManager : MonoBehaviourSingleton<OculusInputManager>
                 //GetGrabGripClick(con);
             }
         }
+
+        
+        OculusInputManager.Instance.GetGrabAnyClicked(leftController);
+        OculusInputManager.Instance.GetGrabAnyClicked(rightController);
+
     }
 
     void LateUpdate(){

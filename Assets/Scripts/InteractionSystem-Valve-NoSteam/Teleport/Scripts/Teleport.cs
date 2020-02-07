@@ -7,17 +7,33 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+using UnityEngine.Events;
+
 
 namespace Valve.VR.InteractionSystem
 {
 	//-------------------------------------------------------------------------
 	public class Teleport : MonoBehaviour
-    {
+    {	
+		[SerializeField]
+		Hand m_mainHand;
+		[SerializeField]
+		Hand m_offHand;
+
+
+		[SerializeField]
+		UnityEvent m_WasTeleportButtonPressedEvent;
+		[SerializeField]
+		UnityEvent m_WasTeleportButtonReleasedEvent;
+		
+
 		public bool teleportWhileHovering = true;
 		public bool teleportWhileGrabbing = true;
 
 		[SerializeField]
 		private TeleportMarkerBase playerSpawnTeleportMarker;
+		[SerializeField]
+		private Transform playerTeleportTargetsParent;
         //public SteamVR_Action_Boolean teleportAction = SteamVR_Input.GetAction<SteamVR_Action_Boolean>("Teleport");
        [SerializeField]
 	   bool m_SnapToFloor;
@@ -116,6 +132,9 @@ namespace Valve.VR.InteractionSystem
 
 		private Vector3 startingFeetOffset = Vector3.zero;
 		private bool movedFeetFarEnough = false;
+
+		private bool m_teleportAndFaceDirectionOfPoint;
+
         /*
 		SteamVR_Events.Action chaperoneInfoInitializedAction;
 
@@ -703,6 +722,9 @@ namespace Valve.VR.InteractionSystem
 		{
 			if ( !visible )
 			{
+				if(teleportMarkers==null)
+					return;
+
 				pointedAtTeleportMarker = null;
 				pointerShowStartTime = Time.time;
 				visible = true;
@@ -711,6 +733,7 @@ namespace Valve.VR.InteractionSystem
 				teleportPointerObject.SetActive( false );
 				teleportArc.Show();
 
+				
 				foreach ( TeleportMarkerBase teleportMarker in teleportMarkers )
 				{
 					if ( teleportMarker.markerActive && teleportMarker.ShouldActivate( player.feetPositionGuess ) )
@@ -879,11 +902,56 @@ namespace Valve.VR.InteractionSystem
             forceTeleportToSpawnPoint(handIndex);
         }
 
+		public void TryBAMFPlayerToPointAndRot(int spawnPointIndex)
+        {
+            forceTeleportToPointAndRot(spawnPointIndex);
+        }
+
+		void forceTeleportToPointAndRot(int spawnPointIndex)
+        {
+			/*
+			Hand playerHand;
+			if(player == null)
+				playerHand = m_mainHand;
+            else 
+				playerHand = player.hands[handIndex];//TODO: not sure if hand[0] is left and hand[1] is right and hand[3] is left etc.
+			if(playerHand.otherHand == null)
+				playerHand.otherHand = m_offHand;
+
+            ShowPointer(playerHand, playerHand.otherHand);*/
+            //if (visible && !teleporting)
+            if (!teleporting)
+            {
+                pointedAtTeleportMarker = playerTeleportTargetsParent.GetChild(spawnPointIndex).GetComponent<TeleportMarkerBase>();
+                if (pointedAtTeleportMarker != null && pointedAtTeleportMarker.locked == false)
+                {
+                    //Pointing at an unlocked teleport marker
+					m_teleportAndFaceDirectionOfPoint = true;
+                    teleportingToMarker = pointedAtTeleportMarker;
+					teleportingToMarker.transform.rotation = pointedAtTeleportMarker.transform.rotation;
+                    InitiateTeleportFade();
+
+                    CancelTeleportHint();
+                }
+            }
+        }
+
         void forceTeleportToSpawnPoint(int handIndex)
         {
-            Hand playerHand = player.hands[handIndex];//TODO: not sure if hand[0] is left and hand[1] is right and hand[3] is left etc.
-            ShowPointer(playerHand, playerHand.otherHand);
-            if (visible && !teleporting)
+			Hand playerHand;
+			if(player == null)
+				playerHand = m_mainHand;
+            else 
+				playerHand = player.hands[handIndex];//TODO: not sure if hand[0] is left and hand[1] is right and hand[3] is left etc.
+			
+			if(playerHand){
+				if(playerHand.otherHand == null)
+					playerHand.otherHand = m_offHand;
+
+            	ShowPointer(playerHand, playerHand.otherHand);
+			}
+			
+            if ((!playerHand || visible) && !teleporting)
             {
                 pointedAtTeleportMarker = playerSpawnTeleportMarker;
                 if (pointedAtTeleportMarker != null && pointedAtTeleportMarker.locked == false)
@@ -914,10 +982,11 @@ namespace Valve.VR.InteractionSystem
 
 			//SteamVR_Fade.Start( Color.clear, 0 );
 			//SteamVR_Fade.Start( Color.black, currentFadeTime );
-
-			headAudioSource.transform.SetParent( player.hmdTransform );
-			headAudioSource.transform.localPosition = Vector3.zero;
-			PlayAudioClip( headAudioSource, teleportSound );
+			if(headAudioSource && player){
+				headAudioSource.transform.SetParent( player.hmdTransform );
+				headAudioSource.transform.localPosition = Vector3.zero;
+				PlayAudioClip( headAudioSource, teleportSound );
+			}
 
 			Invoke( "TeleportPlayer", currentFadeTime );
 		}
@@ -965,15 +1034,31 @@ namespace Valve.VR.InteractionSystem
 
 			if ( teleportingToMarker.ShouldMovePlayer() )
 			{
+				// Vector3 pos = player.hmdTransforms[0].position;
+				// pos.y = 0;
+				// player.trackingOriginTransform.position = player.transform.GetChild(0).position = player.transform.GetChild(0).GetChild(0).position = pos;
+				// if(m_teleportAndFaceDirectionOfPoint){
+				// 	Vector3 rot = player.hmdTransforms[0].rotation.eulerAngles;
+				// 	rot.x=0;
+				// 	rot.z=0;
+				// 	player.trackingOriginTransform.rotation = player.transform.GetChild(0).rotation = player.transform.GetChild(0).GetChild(0).rotation = Quaternion.Euler(rot);
+				// }
+
 				Vector3 playerFeetOffset = player.trackingOriginTransform.position - player.feetPositionGuess;
 				playerFeetOffset.y += player.transform.parent.position.y;
 				player.trackingOriginTransform.position = teleportPosition + playerFeetOffset;
+				
+				if(m_teleportAndFaceDirectionOfPoint){
+					player.transform.rotation = teleportPoint.transform.rotation;
+					m_teleportAndFaceDirectionOfPoint = false;
+				}
 			}
 			else
 			{
 				teleportingToMarker.TeleportPlayer( pointedAtPosition );
 			}
 
+			
 			//Teleport.Player.Send( pointedAtTeleportMarker );
 		}
 
@@ -1173,24 +1258,30 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private bool WasTeleportButtonReleased( Hand hand )
 		{
+			bool result = false;
+
 			if ( IsEligibleForTeleport( hand ) )
 			{
 				if ( hand.noSteamVRFallbackCamera != null )
 				{
-					return Input.GetKeyUp( KeyCode.T );
+					result =  Input.GetKeyUp( KeyCode.T );
 				}
 				else
                 {
                     //return teleportAction.GetStateUp(hand.handType);
                     if(hand.handType == SteamVR_Input_Sources.LeftHand)
-                        return OculusInputManager.Instance.LeftTeleportActionUp;
+                        result =  OculusInputManager.Instance.LeftTeleportActionUp;
                     else if (hand.handType == SteamVR_Input_Sources.RightHand)
-                        return OculusInputManager.Instance.RightTeleportActionUp;
+                        result =  OculusInputManager.Instance.RightTeleportActionUp;
                     //return hand.controller.GetPressUp( SteamVR_Controller.ButtonMask.Touchpad );
                 }
             }
 
-			return false;
+			if(result)
+					if(m_WasTeleportButtonReleasedEvent!=null)
+						m_WasTeleportButtonReleasedEvent.Invoke();
+
+			return result;
 		}
 
 		//-------------------------------------------------
@@ -1198,6 +1289,8 @@ namespace Valve.VR.InteractionSystem
 		{
 			if ( IsEligibleForTeleport( hand ) )
 			{
+				
+
 				if ( hand.noSteamVRFallbackCamera != null )
 				{
 					return Input.GetKey( KeyCode.T );
@@ -1219,25 +1312,31 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private bool WasTeleportButtonPressed( Hand hand )
 		{
+			bool result = false;
+
 			if ( IsEligibleForTeleport( hand ) )
 			{
 				if ( hand.noSteamVRFallbackCamera != null )
 				{
-					return Input.GetKeyDown( KeyCode.T );
+					result =  Input.GetKeyDown( KeyCode.T );
 				}
 				else
                 {
                     //return teleportAction.GetStateDown(hand.handType);
                     if (hand.handType == SteamVR_Input_Sources.LeftHand)
-                        return OculusInputManager.Instance.LeftTeleportActionDown;
+                        result =  OculusInputManager.Instance.LeftTeleportActionDown;
                     else if (hand.handType == SteamVR_Input_Sources.RightHand)
-                        return OculusInputManager.Instance.RightTeleportActionDown;
+                        result =  OculusInputManager.Instance.RightTeleportActionDown;
 
                     //return hand.controller.GetPressDown( SteamVR_Controller.ButtonMask.Touchpad );
                 }
 			}
 
-			return false;
+			if(result)
+				if(m_WasTeleportButtonPressedEvent!=null)
+					m_WasTeleportButtonPressedEvent.Invoke();
+
+			return result;
 		}
 
 

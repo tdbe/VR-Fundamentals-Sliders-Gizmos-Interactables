@@ -1,72 +1,159 @@
 fileFormatVersion: 2
 guid: 5b3653fba5dfc704eaea165c4778881e
-timeCreated: 1478608592
-licenseType: Store
 ModelImporter:
-  serializedVersion: 19
-  fileIDToRecycleName:
-    100000: directionButton
-    100002: //RootNode
-    100004: speedDial
-    100006: spindal
-    100008: topSwitch
-    100010: topSwitchHouse
-    100012: trigger
-    400000: directionButton
-    400002: //RootNode
-    400004: speedDial
-    400006: spindal
-    400008: topSwitch
-    400010: topSwitchHouse
-    400012: trigger
-    2300000: directionButton
-    2300002: //RootNode
-    2300004: speedDial
-    2300006: spindal
-    2300008: topSwitch
-    2300010: topSwitchHouse
-    2300012: trigger
-    3300000: directionButton
-    3300002: //RootNode
-    3300004: speedDial
-    3300006: spindal
-    3300008: topSwitch
-    3300010: topSwitchHouse
-    3300012: trigger
-    4300000: drill
-    4300002: speedDial
-    4300004: spindal
-    4300006: trigger
-    4300008: topSwitchHouse
-    4300010: topSwitch
-    4300012: directionButton
-    7400000: Trigger_Neutral
-    7400002: Trigger_Press
-    9500000: //RootNode
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: directionButton
+  - first:
+      1: 100002
+    second: //RootNode
+  - first:
+      1: 100004
+    second: speedDial
+  - first:
+      1: 100006
+    second: spindal
+  - first:
+      1: 100008
+    second: topSwitch
+  - first:
+      1: 100010
+    second: topSwitchHouse
+  - first:
+      1: 100012
+    second: trigger
+  - first:
+      4: 400000
+    second: directionButton
+  - first:
+      4: 400002
+    second: //RootNode
+  - first:
+      4: 400004
+    second: speedDial
+  - first:
+      4: 400006
+    second: spindal
+  - first:
+      4: 400008
+    second: topSwitch
+  - first:
+      4: 400010
+    second: topSwitchHouse
+  - first:
+      4: 400012
+    second: trigger
+  - first:
+      23: 2300000
+    second: directionButton
+  - first:
+      23: 2300002
+    second: //RootNode
+  - first:
+      23: 2300004
+    second: speedDial
+  - first:
+      23: 2300006
+    second: spindal
+  - first:
+      23: 2300008
+    second: topSwitch
+  - first:
+      23: 2300010
+    second: topSwitchHouse
+  - first:
+      23: 2300012
+    second: trigger
+  - first:
+      33: 3300000
+    second: directionButton
+  - first:
+      33: 3300002
+    second: //RootNode
+  - first:
+      33: 3300004
+    second: speedDial
+  - first:
+      33: 3300006
+    second: spindal
+  - first:
+      33: 3300008
+    second: topSwitch
+  - first:
+      33: 3300010
+    second: topSwitchHouse
+  - first:
+      33: 3300012
+    second: trigger
+  - first:
+      43: 4300000
+    second: drill
+  - first:
+      43: 4300002
+    second: speedDial
+  - first:
+      43: 4300004
+    second: spindal
+  - first:
+      43: 4300006
+    second: trigger
+  - first:
+      43: 4300008
+    second: topSwitchHouse
+  - first:
+      43: 4300010
+    second: topSwitch
+  - first:
+      43: 4300012
+    second: directionButton
+  - first:
+      74: 7400000
+    second: Trigger_Neutral
+  - first:
+      74: 7400002
+    second: Trigger_Press
+  - first:
+      95: 9500000
+    second: //RootNode
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 04 - Default
+    second: {fileID: 2100000, guid: 7c7e504bfcfd909499dfbbee6b6f7a08, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
     resampleCurves: 1
     optimizeGameObjects: 0
     motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
     animationImportErrors: 
     animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
     animationCompression: 1
     animationRotationError: 0.5
     animationPositionError: 0.5
     animationScaleError: 0.5
     animationWrapMode: 0
     extraExposedTransformPaths: []
+    extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
       name: Trigger_Neutral
       takeName: Take 001
+      internalID: 7400000
       firstFrame: 0
       lastFrame: 1
       wrapMode: 0
@@ -109,6 +196,7 @@ ModelImporter:
     - serializedVersion: 16
       name: Trigger_Press
       takeName: Take 001
+      internalID: 7400002
       firstFrame: 4
       lastFrame: 5
       wrapMode: 0
@@ -154,13 +242,23 @@ ModelImporter:
     globalScale: 1
     meshCompression: 0
     addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 0
     importBlendShapes: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
+    indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
@@ -170,9 +268,15 @@ ModelImporter:
     normalSmoothAngle: 60
     normalImportMode: 0
     tangentImportMode: 3
+    normalCalculationMode: 0
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -182,8 +286,11 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 1
     rootMotionBoneName: 
     hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 0
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1

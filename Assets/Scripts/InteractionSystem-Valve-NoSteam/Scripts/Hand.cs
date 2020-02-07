@@ -80,6 +80,7 @@ namespace Valve.VR.InteractionSystem
         private float noSteamVRFallbackInteractorDistance = -1.0f;
 
         public GameObject renderModelPrefab;
+        public List<GameObject> customRenderModels;
         protected List<RenderModel> renderModels = new List<RenderModel>();
         protected RenderModel mainRenderModel;
         protected RenderModel hoverhighlightRenderModel;
@@ -300,6 +301,12 @@ namespace Valve.VR.InteractionSystem
         {
             if (mainRenderModel != null)
                 mainRenderModel.SetVisibility(visible);
+
+            if(customRenderModels!=null && customRenderModels.Count>0){
+                foreach(GameObject rm in customRenderModels){
+                    rm.SetActive(visible);
+                }
+            }
         }
         /*
         public void SetSkeletonRangeOfMotion(EVRSkeletalMotionRange newRangeOfMotion, float blendOverSeconds = 0.1f)
@@ -353,6 +360,8 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         public void AttachObject(GameObject objectToAttach, GrabTypes grabbedWithType, AttachmentFlags flags = defaultAttachmentFlags, Transform attachmentOffset = null)
         {
+
+            //Debug.Log("[Hand.cs{"+gameObject.name+"}][AttachObject] Attaching object? "+(objectToAttach!=null?objectToAttach.name:null));
             AttachedObject attachedObject = new AttachedObject();
             attachedObject.attachmentFlags = flags;
             attachedObject.attachedOffsetTransform = attachmentOffset;
@@ -367,8 +376,10 @@ namespace Valve.VR.InteractionSystem
             CleanUpAttachedObjectStack();
 
             //Detach the object if it is already attached so that it can get re-attached at the top of the stack
-            if(ObjectIsAttached(objectToAttach))
+            if(ObjectIsAttached(objectToAttach)){
                 DetachObject(objectToAttach);
+                //return;
+            }
 
             //Detach from the other hand if requested
             if (attachedObject.HasAttachFlag(AttachmentFlags.DetachFromOtherHand))
@@ -597,6 +608,8 @@ namespace Valve.VR.InteractionSystem
             hoverLocked = false;
         }
 
+
+        //float lastDetachTime;
         //-------------------------------------------------
         // Detach this GameObject from the attached object stack of this Hand
         //
@@ -604,10 +617,19 @@ namespace Valve.VR.InteractionSystem
         //-------------------------------------------------
         public void DetachObject(GameObject objectToDetach, bool restoreOriginalParent = true)
         {
+            // if(Time.time-lastDetachTime<2f){
+            //     return;
+            // }
+            // lastDetachTime=Time.time;
+            // for (int i=0; i< attachedObjects.Count; i++){
+            //     Debug.Log("[Hand{"+gameObject.name+"}][DetachObject]"+"Attach list so far: "+attachedObjects[i].attachedObject);
+            // }
             int index = attachedObjects.FindIndex(l => l.attachedObject == objectToDetach);
-            //Debug.Log("FOUND OBJECT OR NOT: "+objectToDetach.name+"; found: "+index);
+            //Debug.Log("[Hand{"+gameObject.name+"}][DetachObject] FOUND OBJECT OR NOT: "+objectToDetach.name+"; found index within hand["+gameObject.name+"]: "+index);
+        
             if (index != -1)
             {
+                objectToDetach.transform.parent = null;
                 if (spewDebugText)
                     HandDebugLog("DetachObject " + objectToDetach);
 
@@ -697,15 +719,18 @@ namespace Valve.VR.InteractionSystem
                     newTopObject.SetActive(true);
                     newTopObject.SendMessage("OnHandFocusAcquired", this, SendMessageOptions.DontRequireReceiver);
                 }
+
+
+                CleanUpAttachedObjectStack();
+
+                if (mainRenderModel != null)
+                    mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
+                if (hoverhighlightRenderModel != null)
+                    hoverhighlightRenderModel.MatchHandToTransform(hoverhighlightRenderModel.transform);
+            
             }
 
-            CleanUpAttachedObjectStack();
-
-            if (mainRenderModel != null)
-                mainRenderModel.MatchHandToTransform(mainRenderModel.transform);
-            if (hoverhighlightRenderModel != null)
-                hoverhighlightRenderModel.MatchHandToTransform(hoverhighlightRenderModel.transform);
-        
+            
         }
 
 
@@ -1526,7 +1551,12 @@ namespace Valve.VR.InteractionSystem
                 //     return GrabTypes.Pinch;
                 // if (explicitType == GrabTypes.Grip && grabGripAction.GetStateUp(handType))
                 //     return GrabTypes.Grip;
-                    
+
+                if(OculusInputManager.Instance.GetGrabAnyClicked(OculusInputManager.Instance.GetOculusHand(handType)))
+                    return GrabTypes.Pinch;
+           
+
+
                 if (explicitType == GrabTypes.Pinch && OculusInputManager.Instance.GetGrabPinchUp(OculusInputManager.Instance.GetOculusHand(handType)))
                     return GrabTypes.Pinch;
                 if (explicitType == GrabTypes.Grip && OculusInputManager.Instance.GetGrabGripUp(OculusInputManager.Instance.GetOculusHand(handType)))
@@ -1545,6 +1575,10 @@ namespace Valve.VR.InteractionSystem
                 //     return GrabTypes.Pinch;
                 // if (grabGripAction.GetStateUp(handType))
                 //     return GrabTypes.Grip;
+
+                if(OculusInputManager.Instance.GetGrabAnyClicked(OculusInputManager.Instance.GetOculusHand(handType)))
+                    return GrabTypes.Pinch;
+           
                     
                 if (OculusInputManager.Instance.GetGrabPinchUp(OculusInputManager.Instance.GetOculusHand(handType)))
                     return GrabTypes.Pinch;
@@ -1698,7 +1732,7 @@ namespace Valve.VR.InteractionSystem
         {
             if (spewDebugText)
                 HandDebugLog("Hand " + name + " connected with type " + handType.ToString());
-
+            /*
             bool hadOldRendermodel = mainRenderModel != null;
             //EVRSkeletalMotionRange oldRM_rom = EVRSkeletalMotionRange.WithController;
             //if(hadOldRendermodel)
@@ -1737,6 +1771,9 @@ namespace Valve.VR.InteractionSystem
 
             this.BroadcastMessage("SetInputSource", handType, SendMessageOptions.DontRequireReceiver); // let child objects know we've initialized
             //this.BroadcastMessage("OnHandInitialized", deviceIndex, SendMessageOptions.DontRequireReceiver); // let child objects know we've initialized
+            */
+
+
         }
 
         public void SetRenderModel(GameObject prefab)

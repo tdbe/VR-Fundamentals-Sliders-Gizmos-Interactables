@@ -11,14 +11,8 @@ This script takes all the VRBasics Rais, groups them, and exposes a slider that 
 [ExecuteInEditMode]
 public class RailGroup : InteractableValue
 {
-    [SerializeField]
-    [Range(0, 1)]
-    float m_setSliderPos = -1;
-    float m_setSliderPosPrev = -1;
-    [SerializeField]
-    bool m_forceSet;
-    //total length of all children rails of this railgroup. updated every frame in calculateGlobalSliderPosition()
-    float m_totalRailLength;
+  
+
     //[Range(0,1)]
     //public new float sliderPosition;
 
@@ -40,7 +34,7 @@ public class RailGroup : InteractableValue
     UnityEvent onSliderOn_25Percent;
     [SerializeField]
     UnityEvent onSliderOn_75Percent;
-
+    
 
 
     [SerializeField]
@@ -75,23 +69,21 @@ public class RailGroup : InteractableValue
 
     AudioClip[] waveFiles;
 
-
     // Start is called before the first frame update
     void Start()
     {
         // checks if the user in the inspector set the m_railGroupGlobalHandle reference to an internal rail slider game object or an unrelated object.
-        if (m_railGroupGlobalHandle != null && m_railGroupGlobalHandle.parent.GetComponent<VRBasics_Rail>() == null)
-        {
+        if(m_railGroupGlobalHandle !=null && m_railGroupGlobalHandle.parent.GetComponent<VRBasics_Rail>() == null){
             m_IsGlobalHandleGlobal = true;
         }
 
-        if (onSliderPositionUpdate == null)
+        if(onSliderPositionUpdate==null)
             onSliderPositionUpdate = new UnityInteractableValueEvent();
-
+  
 
         children = m_railsParent.GetComponentsInChildren<VRBasics_Rail>();
 
-#if UNITY_EDITOR
+        #if UNITY_EDITOR
             if(!Application.isPlaying)
                 return;
 #endif
@@ -102,36 +94,31 @@ public class RailGroup : InteractableValue
         InitSound();
     }
 
-    void InitSound()
-    {
-        if (oneshotSound == null)
+    void InitSound(){
+        if(oneshotSound == null)
             oneshotSound = GetComponent<Valve.VR.InteractionSystem.SoundPlayOneshot>();
-        if (oneshotSound == null)
-        {
+        if(oneshotSound == null){
             oneshotSound = gameObject.AddComponent<Valve.VR.InteractionSystem.SoundPlayOneshot>();
         }
-        if (waveFiles == null)
+        if(waveFiles == null)
             waveFiles = AudioClipGroup.Instance.hoverClickSounds;
         oneshotSound.waveFiles = waveFiles;
         oneshotSound.playAllSoundsInArrayAtOnce = false;
     }
 
-    void OnEnable()
-    {
+    void OnEnable(){
         m_agi = children[m_currentRail].slider.child.GetComponent<AutoGrabInteractable>();
-
-        //    #if UNITY_EDITOR
-        // 		if(!Application.isPlaying)
-        // 			m_GLHandlesDrawer = (GLHandlesDrawer)FindObjectOfType(typeof(GLHandlesDrawer));
-        // 	#endif
-        if (startAtZero)
-        {
+      
+    //    #if UNITY_EDITOR
+	// 		if(!Application.isPlaying)
+	// 			m_GLHandlesDrawer = (GLHandlesDrawer)FindObjectOfType(typeof(GLHandlesDrawer));
+	// 	#endif
+        if(startAtZero){
             StartCoroutine(DoActionAfterFrames());
         }
     }
 
-    IEnumerator DoActionAfterFrames()
-    {
+    IEnumerator DoActionAfterFrames(){
         //Debug.Log("I reset this object: " + transform.parent.name);
         yield return new WaitForEndOfFrame();
         ResetInteractable();
@@ -141,23 +128,21 @@ public class RailGroup : InteractableValue
         ResetInteractable();
     }
 
-    void OnDisable()
-    {
-        if (m_agi != null)
+    void OnDisable() {
+        if(m_agi!=null)
             m_agi.ManualLetGoOfObject();
     }
 
-    public override void ResetInteractable()
-    {
-        children[m_currentRail].slider.transform.localPosition = Vector3.zero;
-        children[m_currentRail].slider.position = 0;
-        children[m_currentRail].slider.child.transform.localPosition = Vector3.zero; ;//children[m_currentRail].slider.transform.position;
+    public override void ResetInteractable(){
+            children[m_currentRail].slider.transform.localPosition = Vector3.zero;
+            children[m_currentRail].slider.position = 0;
+            children[m_currentRail].slider.child.transform.localPosition = Vector3.zero;;//children[m_currentRail].slider.transform.position;
     }
 
     void calculateGlobalSliderPosition()
     {
         //sliderPosition = (m_currentRail+children[m_currentRail].slider.position)/children.Length;
-        m_totalRailLength = 0;
+        float totalRailLength = 0;
         float lengthSoFar = 0;
         for (int i = 0; i < children.Length; i++)
         {
@@ -169,56 +154,10 @@ public class RailGroup : InteractableValue
             {
                 lengthSoFar += children[m_currentRail].length * children[m_currentRail].slider.position;
             }
-            m_totalRailLength += children[i].length;
+            totalRailLength += children[i].length;
         }
-        sliderPosition = lengthSoFar / m_totalRailLength;
+        sliderPosition = lengthSoFar / totalRailLength;
         //Debug.Log("Calculated global to be this: " + sliderPosition + " for this object: " + transform.parent.name);
-    }
-
-    public void ForceSetGlobalSliderPosition(bool forceSet)
-    {
-        if (forceSet)
-            m_forceSet = true;
-        else
-            m_forceSet = false;
-    }
-
-    public void SetGlobalSliderPosition(float newVal, bool forceSet = false)
-    {
-
-        float sliderPos = newVal;
-        float percentUndivided = 0;
-
-        if (children.Length == 1)
-        {
-            children[0].SetSliderPosition(sliderPos);
-        }
-        else if (children.Length > 1)
-        {
-            for (int i = 0; i < children.Length; i++)
-            {
-                if (percentUndivided + children[i].slider.percentage > sliderPos * children.Length)
-                {
-                    children[i].SetSliderPosition(sliderPos - percentUndivided);
-                    for (int j = 0; j < children.Length; j++)
-                    {
-                        if (j < i)
-                        {
-                            children[j].SetSliderPosition(1);
-                        }
-                        else if (j > i)
-                        {
-                            children[j].SetSliderPosition(0);
-                        }
-                    }
-                    break;
-                }
-                percentUndivided += children[i].slider.percentage;// * children[m_currentRail].slider.position;
-            }
-        }
-
-
-        sliderPosition = m_setSliderPos = newVal;
     }
 
     Vector3 getWorldPositionAtGlobalSliderPosition(float sliderPosition)
@@ -246,53 +185,36 @@ public class RailGroup : InteractableValue
                 Transform child = children[m_currentRail].slider.child.transform;
                 //children[m_currentRail].slider.gameObject.SetActive(true);
                 children[m_currentRail].slider.enabled = true;
-                if (child.childCount > 0)
+                if(child.childCount>0)
                     child.GetChild(0).GetComponent<Collider>().enabled = true;
                 else
                     child.GetComponent<Collider>().enabled = true;
-                if (alsoGrab)
+                if(alsoGrab)
                     children[m_currentRail].slider.child.GetComponent<AutoGrabInteractable>().ManualGrabObject();
             }
         }
     }
 
-    void LateUpdate()
-    {
+    void LateUpdate(){
         m_currentRailOld = m_currentRail;
     }
 
-
-    void Update()
-    {
+    void Update(){
         calculateGlobalSliderPosition();
-
-        if (m_forceSet || m_setSliderPos != m_setSliderPosPrev)
-        {
-            m_setSliderPosPrev = m_setSliderPos;
-            SetGlobalSliderPosition(m_setSliderPos, m_forceSet);
-        }
-
-
-        if (m_railGroupGlobalHandle != null && m_IsGlobalHandleGlobal)
+        if(m_railGroupGlobalHandle!=null && m_IsGlobalHandleGlobal)
             m_railGroupGlobalHandle.transform.position = getWorldPositionAtGlobalSliderPosition(sliderPosition);
 
-        if (prevPos != sliderPosition)
-        {
-            if (onSliderPositionUpdate != null)
-            {
+        if (prevPos!=sliderPosition){
+            if(onSliderPositionUpdate!=null){
                 onSliderPositionUpdate.Invoke(this);
-                if (oneshotSound != null)
-                {
+                if(oneshotSound!=null){
                     Valve.VR.InteractionSystem.Interactable interactable = children[m_currentRail].slider.child.GetComponent<Valve.VR.InteractionSystem.Interactable>();
-                    if (interactable != null)
-                    {
-                        if (interactable.attachedToHand != null)
-                        {
+                    if(interactable !=null){
+                        if(interactable.attachedToHand !=null){
                             oneshotSound.thisAudioSource = interactable.attachedToHand.GetComponent<AudioSource>();
                             oneshotSound.Play((int)AudioClipGroup.SoundTypes_hoverClickSounds.hover);
                         }
-                        else if (interactable.hoveringHand != null)
-                        {
+                        else if(interactable.hoveringHand !=null){
                             oneshotSound.thisAudioSource = interactable.hoveringHand.GetComponent<AudioSource>();
                             oneshotSound.Play((int)AudioClipGroup.SoundTypes_hoverClickSounds.hover);
                         }
@@ -300,33 +222,28 @@ public class RailGroup : InteractableValue
                 }
             }
 
-            if (sliderPosition >= .25f && prevPos < .25f && onSliderOn_25Percent != null)
+            if(sliderPosition >=.25f && prevPos<.25f && onSliderOn_25Percent!=null)
                 onSliderOn_25Percent.Invoke();
-            if (sliderPosition >= .75f && prevPos < .75f && onSliderOn_75Percent != null)
+            if(sliderPosition >=.75f && prevPos<.75f && onSliderOn_75Percent!=null)
                 onSliderOn_75Percent.Invoke();
 
-            if (onSliderBinaryOn != null && sliderPosition > m_minMechanicalSliderValue && prevPos <= m_minMechanicalSliderValue)
-            {
+            if(onSliderBinaryOn!=null && sliderPosition>m_minMechanicalSliderValue && prevPos <= m_minMechanicalSliderValue){
                 onSliderBinaryOn.Invoke();
             }
-            else if (onSliderOnMax != null && sliderPosition > m_maxMechanicalSliderValue && prevPos <= m_maxMechanicalSliderValue)
-            {
+            else if(onSliderOnMax!=null && sliderPosition>m_maxMechanicalSliderValue && prevPos <= m_maxMechanicalSliderValue){
                 onSliderOnMax.Invoke();
                 sliderPosition = 1;
-                SetGlobalSliderPosition(1);
             }
-            else if (onSliderBinaryOff != null && sliderPosition <= m_minMechanicalSliderValue && prevPos > m_minMechanicalSliderValue)
-            {
+            else if(onSliderBinaryOff!=null && sliderPosition<=m_minMechanicalSliderValue && prevPos > m_minMechanicalSliderValue){
                 onSliderBinaryOff.Invoke();
                 sliderPosition = 0;
-                SetGlobalSliderPosition(0);
             }
-
+                
         }
         prevPos = sliderPosition;
 
-
-
+    
+    
     }
 
     public Vector3 FindNearestPointOnLine(Vector3 origin, Vector3 end, Vector3 point)

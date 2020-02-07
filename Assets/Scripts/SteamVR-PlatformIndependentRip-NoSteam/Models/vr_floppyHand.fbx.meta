@@ -1,55 +1,149 @@
 fileFormatVersion: 2
 guid: 395115150fc0faf40abd1994e7405303
 ModelImporter:
-  serializedVersion: 23
-  fileIDToRecycleName:
-    100000: Bone
-    100002: Bone.001
-    100004: Bone.002
-    100006: Bone.003
-    100008: Bone.004
-    100010: Bone.004_end
-    100012: F
-    100014: FingerRig
-    100016: Roundcube
-    100018: Roundcube.001
-    100020: //RootNode
-    100022: Bone0
-    100024: Bone1
-    100026: Bone2
-    100028: Bone3
-    100030: Bone4
-    100032: Bone4_end
-    100034: finger
-    100036: finger.001
-    400000: Bone
-    400002: Bone.001
-    400004: Bone.002
-    400006: Bone.003
-    400008: Bone.004
-    400010: Bone.004_end
-    400012: F
-    400014: FingerRig
-    400016: Roundcube
-    400018: Roundcube.001
-    400020: //RootNode
-    400022: Bone0
-    400024: Bone1
-    400026: Bone2
-    400028: Bone3
-    400030: Bone4
-    400032: Bone4_end
-    400034: finger
-    400036: finger.001
-    2300000: Roundcube
-    3300000: Roundcube
-    4300000: Roundcube.001
-    4300002: Roundcube
-    4300004: finger
-    9500000: //RootNode
-    13700000: Roundcube.001
-    13700002: finger
-    2186277476908879412: ImportLogs
+  serializedVersion: 26
+  internalIDToNameTable:
+  - first:
+      1: 100000
+    second: Bone
+  - first:
+      1: 100002
+    second: Bone.001
+  - first:
+      1: 100004
+    second: Bone.002
+  - first:
+      1: 100006
+    second: Bone.003
+  - first:
+      1: 100008
+    second: Bone.004
+  - first:
+      1: 100010
+    second: Bone.004_end
+  - first:
+      1: 100012
+    second: F
+  - first:
+      1: 100014
+    second: FingerRig
+  - first:
+      1: 100016
+    second: Roundcube
+  - first:
+      1: 100018
+    second: Roundcube.001
+  - first:
+      1: 100020
+    second: //RootNode
+  - first:
+      1: 100022
+    second: Bone0
+  - first:
+      1: 100024
+    second: Bone1
+  - first:
+      1: 100026
+    second: Bone2
+  - first:
+      1: 100028
+    second: Bone3
+  - first:
+      1: 100030
+    second: Bone4
+  - first:
+      1: 100032
+    second: Bone4_end
+  - first:
+      1: 100034
+    second: finger
+  - first:
+      1: 100036
+    second: finger.001
+  - first:
+      4: 400000
+    second: Bone
+  - first:
+      4: 400002
+    second: Bone.001
+  - first:
+      4: 400004
+    second: Bone.002
+  - first:
+      4: 400006
+    second: Bone.003
+  - first:
+      4: 400008
+    second: Bone.004
+  - first:
+      4: 400010
+    second: Bone.004_end
+  - first:
+      4: 400012
+    second: F
+  - first:
+      4: 400014
+    second: FingerRig
+  - first:
+      4: 400016
+    second: Roundcube
+  - first:
+      4: 400018
+    second: Roundcube.001
+  - first:
+      4: 400020
+    second: //RootNode
+  - first:
+      4: 400022
+    second: Bone0
+  - first:
+      4: 400024
+    second: Bone1
+  - first:
+      4: 400026
+    second: Bone2
+  - first:
+      4: 400028
+    second: Bone3
+  - first:
+      4: 400030
+    second: Bone4
+  - first:
+      4: 400032
+    second: Bone4_end
+  - first:
+      4: 400034
+    second: finger
+  - first:
+      4: 400036
+    second: finger.001
+  - first:
+      23: 2300000
+    second: Roundcube
+  - first:
+      33: 3300000
+    second: Roundcube
+  - first:
+      43: 4300000
+    second: Roundcube.001
+  - first:
+      43: 4300002
+    second: Roundcube
+  - first:
+      43: 4300004
+    second: finger
+  - first:
+      95: 9500000
+    second: //RootNode
+  - first:
+      137: 13700000
+    second: Roundcube.001
+  - first:
+      137: 13700002
+    second: finger
+  - first:
+      41386430: 2186277476908879412
+    second: ImportLogs
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -95,25 +189,27 @@ ModelImporter:
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
     importVisibility: 0
     importBlendShapes: 1
     importCameras: 0
     importLights: 0
     swapUVChannels: 0
-    generateSecondaryUV: 0
+    generateSecondaryUV: 1
     useFileUnits: 1
-    optimizeMeshForGPU: 1
     keepQuads: 0
     weldVertices: 1
     preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    meshOptimizationFlags: -1
     indexFormat: 1
     secondaryUVAngleDistortion: 8
     secondaryUVAreaDistortion: 15.000001
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -122,10 +218,11 @@ ModelImporter:
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 1
     blendShapeNormalImportMode: 1
     normalSmoothingSource: 0
+  referencedClips: []
   importAnimation: 1
   copyAvatar: 0
   humanDescription:
-    serializedVersion: 2
+    serializedVersion: 3
     human: []
     skeleton: []
     armTwist: 0.5
@@ -135,6 +232,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
+    globalScale: 100
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

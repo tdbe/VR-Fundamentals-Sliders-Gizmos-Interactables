@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class Spinner : MonoBehaviour
 {
     #if UNITY_EDITOR
@@ -10,10 +10,15 @@ public class Spinner : MonoBehaviour
     #endif
     public float speed = 1;
     public Vector3 rotationDirection = Vector3.up;
+
+    public bool spinWithUniqueOffset = true;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        if(spinWithUniqueOffset){
+            transform.rotation *= Quaternion.AngleAxis(gameObject.GetInstanceID(), rotationDirection);
+        }
     }
 
     #if UNITY_EDITOR
@@ -33,7 +38,7 @@ public class Spinner : MonoBehaviour
     void Update()
     {
         #if UNITY_EDITOR
-            if(!executeInEditMode || !Application.isPlaying){
+            if(!executeInEditMode && !Application.isPlaying || !Application.isPlaying){
                 return;
             }
         #endif

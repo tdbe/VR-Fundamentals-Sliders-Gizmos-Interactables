@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
+
 public class CopyTransformValues : MonoBehaviour {
 
+	//[SerializeField]
+	//bool m_useFixedUpdateInstead = true;
 	[SerializeField]
 	bool m_alwaysUpdateRotation = true;
 	[SerializeField]
@@ -21,13 +23,18 @@ public class CopyTransformValues : MonoBehaviour {
 	[SerializeField]
 	bool m_copyFromFirstChildInstead;
 
+	//[SerializeField]
+	//Vector3 m_offsetPosition = Vector3.zero;
+
+
+
 	[SerializeField]
 	bool m_forceUpdateOnPreCull = false;
 
 
 
 	public void CopyPosition(Transform target){
-		transform.position = target.position;
+		transform.position = target.position + updatePositionExtraAdd;
 	}
 
 	public void CopyRotation(Transform target){
@@ -39,12 +46,12 @@ public class CopyTransformValues : MonoBehaviour {
 	}
 
 	public void CopyPositionAndRotation(Transform target){
-		transform.position = target.position;
+		transform.position = target.position + updatePositionExtraAdd;
 		transform.rotation = target.rotation;
 	}
 
 	public void CopyPositionAndRotationAndScale(Transform target){
-		transform.position = target.position;
+		transform.position = target.position + updatePositionExtraAdd;
 		transform.rotation = target.rotation;
 		transform.localScale = target.localScale;		
 	}
@@ -87,6 +94,12 @@ public class CopyTransformValues : MonoBehaviour {
 	}
 
 	void Update(){
+		//if(!m_useFixedUpdateInstead)
+			Move();
+		
+	}
+
+	void Move(){
 		if(target == null) return;
 
 		if(!m_forceUpdateOnPreCull){
@@ -98,6 +111,11 @@ public class CopyTransformValues : MonoBehaviour {
 				transform.localScale = target.localScale;
 		}
 	}
+
+	// void FixedUpdate(){
+	// 	if(m_useFixedUpdateInstead)
+	// 		Move();
+	// }
 
 	void OnPreCull(){
 		if(target == null) return;

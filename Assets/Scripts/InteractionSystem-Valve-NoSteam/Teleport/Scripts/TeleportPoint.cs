@@ -32,13 +32,22 @@ namespace Valve.VR.InteractionSystem
 
 		//Private data
 		private bool gotReleventComponents = false;
+		[SerializeField]
 		private MeshRenderer markerMesh;
+		[SerializeField]
 		private MeshRenderer switchSceneIcon;
+		[SerializeField]
 		private MeshRenderer moveLocationIcon;
+		[SerializeField]
 		private MeshRenderer lockedIcon;
+		[SerializeField]
 		private MeshRenderer pointIcon;
+		[SerializeField]
 		private Transform lookAtJointTransform;
+		[SerializeField]
+
 		private new Animation animation;
+		[SerializeField]
 		private Text titleText;
 		private Player player;
 		private Vector3 lookAtPosition = Vector3.zero;
@@ -68,13 +77,14 @@ namespace Valve.VR.InteractionSystem
 		{
 			GetRelevantComponents();
 
-			animation = GetComponent<Animation>();
+			if(!animation)
+				animation = GetComponentInChildren<Animation>();
 
 			tintColorID = Shader.PropertyToID( "_TintColor" );
 
-			moveLocationIcon.gameObject.SetActive( false );
-			switchSceneIcon.gameObject.SetActive( false );
-			lockedIcon.gameObject.SetActive( false );
+			if(moveLocationIcon) moveLocationIcon.gameObject.SetActive( false );
+			if(switchSceneIcon) switchSceneIcon.gameObject.SetActive( false );
+			if(lockedIcon) lockedIcon.gameObject.SetActive( false );
 
 			UpdateVisuals();
 		}
@@ -90,13 +100,15 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		void Update()
 		{
-			if ( Application.isPlaying )
-			{
-				lookAtPosition.x = player.hmdTransform.position.x;
-				lookAtPosition.y = lookAtJointTransform.position.y;
-				lookAtPosition.z = player.hmdTransform.position.z;
+			if(lookAtJointTransform) {
+				if ( Application.isPlaying )
+				{
+					lookAtPosition.x = player.hmdTransform.position.x;
+					lookAtPosition.y = lookAtJointTransform.position.y;
+					lookAtPosition.z = player.hmdTransform.position.z;
 
-				lookAtJointTransform.LookAt( lookAtPosition );
+					lookAtJointTransform.LookAt( lookAtPosition );
+				}
 			}
 		}
 
@@ -132,13 +144,13 @@ namespace Valve.VR.InteractionSystem
 
 			if ( highlight )
 			{
-				pointIcon.gameObject.SetActive( true );
-				animation.Play();
+				if(pointIcon) pointIcon.gameObject.SetActive( true );
+				if(animation) animation.Play();
 			}
 			else
 			{
-				pointIcon.gameObject.SetActive( false );
-				animation.Stop();
+				if(pointIcon) pointIcon.gameObject.SetActive( false );
+				if(animation) animation.Stop();
 			}
 		}
 
@@ -155,9 +167,9 @@ namespace Valve.VR.InteractionSystem
 			{
 				SetMeshMaterials( Valve.VR.InteractionSystem.Teleport.instance.pointLockedMaterial, titleLockedColor );
 
-				pointIcon = lockedIcon;
+				if(pointIcon) pointIcon = lockedIcon;
 
-				animation.clip = animation.GetClip( lockedAnimation );
+				if(animation) animation.clip = animation.GetClip( lockedAnimation );
 			}
 			else
 			{
@@ -167,22 +179,22 @@ namespace Valve.VR.InteractionSystem
 				{
 					case TeleportPointType.MoveToLocation:
 						{
-							pointIcon = moveLocationIcon;
+							if(pointIcon) pointIcon = moveLocationIcon;
 
-							animation.clip = animation.GetClip( moveLocationAnimation );
+							if(animation) animation.clip = animation.GetClip( moveLocationAnimation );
 						}
 						break;
 					case TeleportPointType.SwitchToNewScene:
 						{
-							pointIcon = switchSceneIcon;
+							if(pointIcon) pointIcon = switchSceneIcon;
 
-							animation.clip = animation.GetClip( switchSceneAnimation );
+							if(animation) animation.clip = animation.GetClip( switchSceneAnimation );
 						}
 						break;
 				}
 			}
 
-			titleText.text = title;
+			if(titleText) titleText.text = title;
 		}
 
 
@@ -193,12 +205,12 @@ namespace Valve.VR.InteractionSystem
 			tintColor.a = tintAlpha;
 
 			markerMesh.material.SetColor( tintColorID, tintColor );
-			switchSceneIcon.material.SetColor( tintColorID, tintColor );
-			moveLocationIcon.material.SetColor( tintColorID, tintColor );
-			lockedIcon.material.SetColor( tintColorID, tintColor );
+			if(switchSceneIcon) switchSceneIcon.material.SetColor( tintColorID, tintColor );
+			if(moveLocationIcon) moveLocationIcon.material.SetColor( tintColorID, tintColor );
+			if(lockedIcon) lockedIcon.material.SetColor( tintColorID, tintColor );
 
 			titleColor.a = fullTitleAlpha * alphaPercent;
-			titleText.color = titleColor;
+			if(titleText) titleText.color = titleColor;
 		}
 
 
@@ -206,13 +218,13 @@ namespace Valve.VR.InteractionSystem
 		public void SetMeshMaterials( Material material, Color textColor )
 		{
 			markerMesh.material = material;
-			switchSceneIcon.material = material;
-			moveLocationIcon.material = material;
-			lockedIcon.material = material;
+			if(switchSceneIcon) switchSceneIcon.material = material;
+			if(moveLocationIcon) moveLocationIcon.material = material;
+			if(lockedIcon) lockedIcon.material = material;
 
 			titleColor = textColor;
 			fullTitleAlpha = textColor.a;
-			titleText.color = titleColor;
+			if(titleText) titleText.color = titleColor;
 		}
 
 
@@ -233,13 +245,14 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		public void GetRelevantComponents()
 		{
-			markerMesh = transform.Find( "teleport_marker_mesh" ).GetComponent<MeshRenderer>();
-			switchSceneIcon = transform.Find( "teleport_marker_lookat_joint/teleport_marker_icons/switch_scenes_icon" ).GetComponent<MeshRenderer>();
-			moveLocationIcon = transform.Find( "teleport_marker_lookat_joint/teleport_marker_icons/move_location_icon" ).GetComponent<MeshRenderer>();
-			lockedIcon = transform.Find( "teleport_marker_lookat_joint/teleport_marker_icons/locked_icon" ).GetComponent<MeshRenderer>();
-			lookAtJointTransform = transform.Find( "teleport_marker_lookat_joint" );
 
-			titleText = transform.Find( "teleport_marker_lookat_joint/teleport_marker_canvas/teleport_marker_canvas_text" ).GetComponent<Text>();
+			// markerMesh = transform.Find( "teleport_marker_mesh" ).GetComponent<MeshRenderer>();
+			// switchSceneIcon = transform.Find( "teleport_marker_lookat_joint/teleport_marker_icons/switch_scenes_icon" ).GetComponent<MeshRenderer>();
+			// moveLocationIcon = transform.Find( "teleport_marker_lookat_joint/teleport_marker_icons/move_location_icon" ).GetComponent<MeshRenderer>();
+			// lockedIcon = transform.Find( "teleport_marker_lookat_joint/teleport_marker_icons/locked_icon" ).GetComponent<MeshRenderer>();
+			// lookAtJointTransform = transform.Find( "teleport_marker_lookat_joint" );
+
+			// titleText = transform.Find( "teleport_marker_lookat_joint/teleport_marker_canvas/teleport_marker_canvas_text" ).GetComponent<Text>();
 
 			gotReleventComponents = true;
 		}
@@ -248,12 +261,12 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		public void ReleaseRelevantComponents()
 		{
-			markerMesh = null;
-			switchSceneIcon = null;
-			moveLocationIcon = null;
-			lockedIcon = null;
-			lookAtJointTransform = null;
-			titleText = null;
+			// markerMesh = null;
+			// switchSceneIcon = null;
+			// moveLocationIcon = null;
+			// lockedIcon = null;
+			// lookAtJointTransform = null;
+			// titleText = null;
 		}
 
 
@@ -269,43 +282,46 @@ namespace Valve.VR.InteractionSystem
 
 			if ( locked )
 			{
-				lockedIcon.gameObject.SetActive( true );
-				moveLocationIcon.gameObject.SetActive( false );
-				switchSceneIcon.gameObject.SetActive( false );
+				if(lockedIcon)
+					lockedIcon.gameObject.SetActive( true );
+				if(moveLocationIcon)
+					moveLocationIcon.gameObject.SetActive( false );
+				if(switchSceneIcon)
+					switchSceneIcon.gameObject.SetActive( false );
 
 				markerMesh.sharedMaterial = Valve.VR.InteractionSystem.Teleport.instance.pointLockedMaterial;
-				lockedIcon.sharedMaterial = Valve.VR.InteractionSystem.Teleport.instance.pointLockedMaterial;
+				if(lockedIcon) lockedIcon.sharedMaterial = Valve.VR.InteractionSystem.Teleport.instance.pointLockedMaterial;
 
-				titleText.color = titleLockedColor;
+				if(titleText) titleText.color = titleLockedColor;
 			}
 			else
 			{
-				lockedIcon.gameObject.SetActive( false );
+				if(lockedIcon) lockedIcon.gameObject.SetActive( false );
 
 				markerMesh.sharedMaterial = Valve.VR.InteractionSystem.Teleport.instance.pointVisibleMaterial;
-				switchSceneIcon.sharedMaterial = Valve.VR.InteractionSystem.Teleport.instance.pointVisibleMaterial;
-				moveLocationIcon.sharedMaterial = Valve.VR.InteractionSystem.Teleport.instance.pointVisibleMaterial;
+				if(switchSceneIcon) switchSceneIcon.sharedMaterial = Valve.VR.InteractionSystem.Teleport.instance.pointVisibleMaterial;
+				if(moveLocationIcon) moveLocationIcon.sharedMaterial = Valve.VR.InteractionSystem.Teleport.instance.pointVisibleMaterial;
 
-				titleText.color = titleVisibleColor;
+				if(titleText) titleText.color = titleVisibleColor;
 
 				switch ( teleportType )
 				{
 					case TeleportPointType.MoveToLocation:
 						{
-							moveLocationIcon.gameObject.SetActive( true );
-							switchSceneIcon.gameObject.SetActive( false );
+							if(moveLocationIcon) moveLocationIcon.gameObject.SetActive( true );
+							if(switchSceneIcon) switchSceneIcon.gameObject.SetActive( false );
 						}
 						break;
 					case TeleportPointType.SwitchToNewScene:
 						{
-							moveLocationIcon.gameObject.SetActive( false );
-							switchSceneIcon.gameObject.SetActive( true );
+							if(moveLocationIcon) moveLocationIcon.gameObject.SetActive( false );
+							if(switchSceneIcon) switchSceneIcon.gameObject.SetActive( true );
 						}
 						break;
 				}
 			}
 
-			titleText.text = title;
+			if(titleText) titleText.text = title;
 
 			ReleaseRelevantComponents();
 		}

@@ -56,24 +56,24 @@ public class VRBasics_Rail : MonoBehaviour {
 		maxLimitPosOld = maxLimitPos.position;
 	}
 	
-	public void SetSliderPosition(float newVal){
-		slider.SetPosition(newVal); 
-	}
-
 	public void UpdateChildren(){
 
 		//an empty game object used to aid in positioning
 		//GameObject dummyTrans = GetDummy();
 		Vector3 dummyPos = Vector3.zero;
 
+
 		//reference to the configurable joint the gizmo displays
 		ConfigurableJoint configJoint = slider.TargetConfigurableJoint;//.gameObject.GetComponent<ConfigurableJoint> ();
+
 
 		dummyPos = transform.position;
 		dummyPos += transform.up * anchorMove;
 
 		minLimitPos.position = dummyPos + (transform.up.normalized* configJoint.linearLimit.limit);
 		maxLimitPos.position = dummyPos - (transform.up.normalized * configJoint.linearLimit.limit);
+
+
 	}
 
 	/*

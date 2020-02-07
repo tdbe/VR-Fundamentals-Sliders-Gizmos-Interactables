@@ -117,7 +117,7 @@ Shader "Valve/VR/Highlight"
 			// Render State ---------------------------------------------------------------------------------------------------------------------------------------------
 			Blend One OneMinusSrcAlpha
 			Cull Off
-			ZWrite Off
+			ZWrite On
 			ZTest LEqual
 
 			CGPROGRAM
