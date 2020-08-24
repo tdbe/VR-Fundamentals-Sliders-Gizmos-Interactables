@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR.InteractionSystem;
 
-public class KHVR_PlayerController : MonoBehaviour {
+public class PlayerController : MonoBehaviour {
 
     //[SerializeField]
     Vector3 m_playerSpawnPosition;

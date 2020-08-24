@@ -361,9 +361,10 @@ public class GLHandlesDrawer : MonoBehaviour
             //bool matSet = false;
 
             // draw lines that have this material
+            GL.Begin(GL.LINES);
             foreach(var group in linesListGroups){
                 if(group.Key == mat.Key){//TODO: why the heck can't I get a groups.GetByKey(groupKey) ? What Linq magic must I know?
-                    GL.Begin(GL.LINES);
+                    
                     //if(!matSet){
                         DrawSetMaterial(mat.Value);
                         //matSet = true;
@@ -372,14 +373,15 @@ public class GLHandlesDrawer : MonoBehaviour
                     foreach(LinesListData linesListData in group){
                         DrawLine(linesListData.startPos, linesListData.endPos);
                     }
-                    GL.End();
+                    
                     break;
                 }
             }
             // draw circles that have this material
+            
             foreach(var group in circlesListGroups){
                 if(group.Key == mat.Key){//TODO: why the heck can't I get a groups.GetByKey(groupKey) ? What Linq magic must I know?
-                    GL.Begin(GL.LINES);
+                    
                     //if(!matSet){
                         DrawSetMaterial(mat.Value);
                         //matSet = true;
@@ -388,11 +390,11 @@ public class GLHandlesDrawer : MonoBehaviour
                     foreach(CirclesListData circlesListData in group){
                         DrawCircle(circlesListData.position, circlesListData.fwd, circlesListData.right, circlesListData.up, circlesListData.radius, circlesListData.resolution);
                     }
-                    GL.End();
+                    
                     break;
                 }
             }
-            
+            GL.End();
         }
         
         //GL.End();
@@ -407,16 +409,15 @@ public class GLHandlesDrawer : MonoBehaviour
             return;
         }
         //DrawGLPush();
-        //GL.Begin(GL.TRIANGLES);
         var discsListGroups = m_GLDiscsList.GroupBy(discData => discData.mat.GetHashCode());
 
         foreach(KeyValuePair<int, Material> mat in m_uniqueMaterials){
             //bool matSet = false;
 
             // draw discs that have this material
+            GL.Begin(GL.TRIANGLES);
             foreach(var group in discsListGroups){
                 if(group.Key == mat.Key){//TODO: why the heck can't I get a groups.GetByKey(groupKey) ? What Linq magic must I know?
-                    GL.Begin(GL.TRIANGLES);
                     //if(!matSet){
                         DrawSetMaterial(mat.Value);
                         //matSet = true;
@@ -425,14 +426,13 @@ public class GLHandlesDrawer : MonoBehaviour
                     foreach(DiscsListData discsListData in group){
                         DrawDisc(discsListData.position, discsListData.fwd, discsListData.right, discsListData.up, discsListData.radius, discsListData.resolution);
                     }
-                    GL.End();
                     break;
                 }
             }
+            GL.End();
            
         }
 
-        //GL.End();
         //DrawGLPop();   
         m_GLDiscsList.Clear(); 
     }

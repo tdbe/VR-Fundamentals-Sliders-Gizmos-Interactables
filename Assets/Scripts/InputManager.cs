@@ -150,12 +150,12 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
     void updateTrackedControllers()
     {
         /*
-        //int lControllerIndex = index_left;// KHVR.SteamControllerWrapperSerializable.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost); // Used instead of  SteamVR_Controller.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost);
-        //int lControllerIndex = KHVR.Input.SteamControllerWrapperSerializable.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost);
+        //int lControllerIndex = index_left;// SteamControllerWrapperSerializable.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost); // Used instead of  SteamVR_Controller.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost);
+        //int lControllerIndex = Input.SteamControllerWrapperSerializable.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost);
         int lControllerIndex = (int)(SteamVR_Controller.DeviceRelation.Leftmost);
 
-        //int rControllerIndex = index_right;// KHVR.SteamControllerWrapperSerializable.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost); // Used instead of  SteamVR_Controller.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost);
-        //int rControllerIndex = KHVR.Input.SteamControllerWrapperSerializable.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Rightmost);
+        //int rControllerIndex = index_right;// SteamControllerWrapperSerializable.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost); // Used instead of  SteamVR_Controller.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Leftmost);
+        //int rControllerIndex = Input.SteamControllerWrapperSerializable.GetDeviceIndex(SteamVR_Controller.DeviceRelation.Rightmost);
         int rControllerIndex = (int)(SteamVR_Controller.DeviceRelation.Rightmost);
 
 
@@ -169,13 +169,13 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
               m_trackedControllerLeft.index < m_trackedControllerRight.index
                )
                 {
-                    _deviceLeft = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
-                    _deviceRight = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
+                    _deviceLeft = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
+                    _deviceRight = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
                 }
                 else
                 {
-                    _deviceLeft = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
-                    _deviceRight = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
+                    _deviceLeft = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
+                    _deviceRight = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
                 }
 
             }
@@ -185,9 +185,9 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
         else if (lControllerIndex == m_trackedControllerRight.index)
         {
             leftHandOpenVRTransform = _origRightOpenVRControllerTransform;
-            //_deviceLeft = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
-            _deviceLeft = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
-            _deviceRight = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
+            //_deviceLeft = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
+            _deviceLeft = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
+            _deviceRight = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
 
         }
         else if (
@@ -200,7 +200,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
             
         {
             leftHandOpenVRTransform = _origLeftOpenVRControllerTransform;
-            _deviceLeft = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
+            _deviceLeft = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
 
         }
         else if (
@@ -212,7 +212,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
 
         {
             leftHandOpenVRTransform = _origRightOpenVRControllerTransform;
-            _deviceLeft = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
+            _deviceLeft = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
 
         }
         else
@@ -232,13 +232,13 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
                     m_trackedControllerLeft.index < m_trackedControllerRight.index
                     )
                 {
-                    _deviceRight = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
-                    _deviceLeft = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
+                    _deviceRight = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
+                    _deviceLeft = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
                 }
                 else
                 {
-                    _deviceRight = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
-                    _deviceLeft = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
+                    _deviceRight = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
+                    _deviceLeft = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
                 }
             }
            
@@ -246,9 +246,9 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
         else if (rControllerIndex == m_trackedControllerLeft.index)
         {
             rightHandOpenVRTransform = _origLeftOpenVRControllerTransform;
-            //_deviceRight = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
-            _deviceRight = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
-            _deviceLeft = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
+            //_deviceRight = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
+            _deviceRight = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
+            _deviceLeft = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
         }
         else if (
             (
@@ -260,7 +260,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
 
         {
             rightHandOpenVRTransform = _origRightOpenVRControllerTransform;
-            _deviceRight = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
+            _deviceRight = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(rControllerIndex));
         }
         else if (
             (
@@ -271,7 +271,7 @@ public class InputManager : MonoBehaviourSingleton<InputManager> {
 
         {
             rightHandOpenVRTransform = _origLeftOpenVRControllerTransform;
-            _deviceRight = KHVR.Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
+            _deviceRight = Input.SteamControllerWrapperSerializable.GetWrappedDevice(SteamVR_Controller.Input(lControllerIndex));
         }
         else
         {
