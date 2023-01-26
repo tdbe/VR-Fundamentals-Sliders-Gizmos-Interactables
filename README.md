@@ -15,7 +15,12 @@ Limitations:
 Features:
 - See GizmoSampleScene.unity
 
-Sliders
+![Screenshot](https://user-images.githubusercontent.com/1399607/214954920-5acedbdc-46ad-4d9b-a90b-64c5c384fe49.PNG)
+
+---
+
+
+Sliders - WIP from another project
 ---
 Limitations:
 - some functionality not tested. TODO: finish testing.
